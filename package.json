@@ -1,6 +1,6 @@
 {
   "name": "video-companion-extension",
-  "version": "1.1.0",
+  "version": "1.0.0",
   "description": "增强网页视频播放体验 - 画中画、全屏、倍速控制等",
   "type": "module",
   "scripts": {
