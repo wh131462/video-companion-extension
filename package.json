@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:zip": "npm run build && cd dist && zip -r ../video-companion-extension.zip . && cd ..",
     "preview": "vite preview",
     "test": "vitest",
     "test:coverage": "vitest --coverage",
