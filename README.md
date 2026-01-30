@@ -4,17 +4,17 @@
 
 ## 截图预览
 
-| 弹窗面板 | 控制面板 |
+| 弹窗面板 | 视频控制面板 |
 |:---:|:---:|
-| ![弹窗面板](docs/snapshots/panel.png) | ![控制面板](docs/snapshots/closable.png) |
+| ![弹窗面板](docs/snapshots/panel.png) | ![视频控制面板](docs/snapshots/controls.png) |
 
-| 右键菜单 | 倍速子菜单 |
+| 可关闭面板 | 右键菜单 |
 |:---:|:---:|
-| ![右键菜单](docs/snapshots/contextMenu.png) | ![倍速子菜单](docs/snapshots/contextMenuFull.png) |
+| ![可关闭面板](docs/snapshots/closable.png) | ![右键菜单](docs/snapshots/contextMenu.png) |
 
-| 禁用状态 |
+| 倍速子菜单 |
 |:---:|
-| ![禁用状态](docs/snapshots/disable.png) |
+| ![倍速子菜单](docs/snapshots/contextMenuFull.png) |
 
 ## 功能特性
 
@@ -80,8 +80,11 @@
 
 ## 安装
 
-### 从 Chrome 网上应用店安装
-*即将上线*
+### 从 Chrome 网上应用店安装（推荐）
+
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/nmkklhdipnadeimbnimllidjgccbifhm?label=Chrome%20Web%20Store)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
+
+[**点击安装 Video Companion**](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
 
 ### 从源码安装
 
