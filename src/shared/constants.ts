@@ -12,6 +12,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   enabled: true,
   defaultSpeed: 1,
   showPanel: true,
+  showContextMenu: true,
   panelPosition: 'top-right',
   enableShortcuts: true,
   autoHidePanel: true,

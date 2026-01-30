@@ -97,6 +97,11 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       showToast('Video Companion 已禁用');
       return { success: true };
 
+    case 'getVideoCount': {
+      const videos = document.querySelectorAll('video');
+      return { success: true, count: videos.length };
+    }
+
     default:
       return { success: false, error: 'Unknown action' };
   }

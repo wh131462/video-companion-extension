@@ -27,7 +27,8 @@
       "16": "public/icons/icon16.png",
       "48": "public/icons/icon48.png"
     },
-    "default_title": "Video Companion"
+    "default_title": "Video Companion",
+    "default_popup": "src/popup/index.html"
   },
   "content_scripts": [
     {

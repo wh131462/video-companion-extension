@@ -13,6 +13,14 @@ export default defineConfig({
       '@shared': resolve(__dirname, 'src/shared'),
       '@content': resolve(__dirname, 'src/content'),
       '@background': resolve(__dirname, 'src/background'),
+      '@popup': resolve(__dirname, 'src/popup'),
+    },
+  },
+  server: {
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      port: 5173,
     },
   },
   build: {

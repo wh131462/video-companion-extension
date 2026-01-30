@@ -7,6 +7,7 @@ export interface UserSettings {
   enabled: boolean;
   defaultSpeed: number;
   showPanel: boolean;
+  showContextMenu: boolean;
   panelPosition: PanelPosition;
   enableShortcuts: boolean;
   autoHidePanel: boolean;
@@ -37,7 +38,8 @@ export type MessageAction =
   | 'speedDown'
   | 'settingsChanged'
   | 'extensionEnabled'
-  | 'extensionDisabled';
+  | 'extensionDisabled'
+  | 'getVideoCount';
 
 // 消息接口
 export interface Message {
@@ -52,6 +54,7 @@ export interface MessageResponse {
   success: boolean;
   error?: string;
   data?: unknown;
+  count?: number;
 }
 
 // 功能模块接口

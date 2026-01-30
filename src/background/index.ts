@@ -40,22 +40,16 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   await initIconState();
 });
 
-// 扩展程序图标点击 - 切换启用/禁用状态
-chrome.action.onClicked.addListener(async () => {
-  // 获取当前设置
-  const settings = await storageService.getSettings();
-  const newEnabled = !settings.enabled;
-
-  // 更新设置
-  await storageService.updateSettings({ enabled: newEnabled });
-
-  // 更新图标状态
-  await updateIconState(newEnabled);
-
-  // 广播状态变化到所有标签页
-  broadcastExtensionState(newEnabled);
-
-  console.log(`Video Companion: ${newEnabled ? '已启用' : '已禁用'}`);
+// 处理来自 popup 的消息
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.action === 'updateIconState') {
+    updateIconState(message.enabled);
+    sendResponse({ success: true });
+  } else if (message.action === 'broadcastExtensionState') {
+    broadcastExtensionState(message.enabled);
+    sendResponse({ success: true });
+  }
+  return true;
 });
 
 // 监听存储变化并广播
