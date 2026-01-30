@@ -5,11 +5,14 @@
 import type { UserSettings } from '@shared/types';
 import { DEFAULT_SETTINGS } from '@shared/constants';
 import { ControlPanel } from '../ui/ControlPanel';
+import { ContextMenu } from '../ui/ContextMenu';
 import { VideoScanner } from './VideoScanner';
+import { hasCustomControls } from '../utils/detectCustomControls';
 
 export class VideoEnhancer {
   private scanner: VideoScanner;
   private panels = new Map<HTMLVideoElement, ControlPanel>();
+  private contextMenus = new Map<HTMLVideoElement, ContextMenu>();
   private settings: UserSettings = DEFAULT_SETTINGS;
   // 记录用户手动关闭面板的视频 ID
   private closedPanels = new Set<string>();
@@ -49,6 +52,8 @@ export class VideoEnhancer {
     this.scanner.stop();
     this.panels.forEach((panel) => panel.destroy());
     this.panels.clear();
+    this.contextMenus.forEach((menu) => menu.destroy());
+    this.contextMenus.clear();
   }
 
   updateSettings(settings: Partial<UserSettings>): void {
@@ -60,7 +65,26 @@ export class VideoEnhancer {
     // 为视频生成 ID
     this.getVideoId(video);
 
-    // 创建控制面板
+    // 检测是否有自定义控制器
+    const hasCustom = hasCustomControls(video);
+
+    // 创建右键菜单（无论是否有自定义控制器都创建）
+    const contextMenu = new ContextMenu(video);
+    this.contextMenus.set(video, contextMenu);
+
+    // 设置右键菜单事件
+    video.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      contextMenu.show(e.clientX, e.clientY);
+    });
+
+    // 如果有自定义控制器，只用右键菜单，不显示控制面板
+    if (hasCustom) {
+      return;
+    }
+
+    // 创建控制面板（只有原生视频才创建）
     const panel = new ControlPanel({
       video,
       autoHide: this.settings.autoHidePanel,

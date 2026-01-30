@@ -5,7 +5,6 @@
 import { storageService } from './services/storage';
 import { setupMessageHandler, broadcastSettingsChange, broadcastExtensionState } from './handlers/message';
 import { setupCommandHandler } from './handlers/command';
-import { setupContextMenus, setupMenuClickHandler } from './handlers/menu';
 
 // 更新扩展图标状态
 async function updateIconState(enabled: boolean): Promise<void> {
@@ -36,9 +35,6 @@ chrome.runtime.onInstalled.addListener(async (details) => {
     await storageService.migrateSettings();
     console.log('Video Companion: 已更新到版本', chrome.runtime.getManifest().version);
   }
-
-  // 设置右键菜单
-  setupContextMenus();
 
   // 初始化图标状态
   await initIconState();
@@ -72,7 +68,6 @@ storageService.onChanged((changes) => {
 // 设置处理器
 setupMessageHandler();
 setupCommandHandler();
-setupMenuClickHandler();
 
 // Service Worker 启动时初始化图标状态
 initIconState();
