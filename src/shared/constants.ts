@@ -9,6 +9,7 @@ export const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3] as const
 
 // 默认设置
 export const DEFAULT_SETTINGS: UserSettings = {
+  enabled: true,
   defaultSpeed: 1,
   showPanel: true,
   panelPosition: 'top-right',

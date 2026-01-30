@@ -4,6 +4,7 @@
 
 // 用户设置
 export interface UserSettings {
+  enabled: boolean;
   defaultSpeed: number;
   showPanel: boolean;
   panelPosition: PanelPosition;
@@ -34,7 +35,9 @@ export type MessageAction =
   | 'setSpeed'
   | 'speedUp'
   | 'speedDown'
-  | 'settingsChanged';
+  | 'settingsChanged'
+  | 'extensionEnabled'
+  | 'extensionDisabled';
 
 // 消息接口
 export interface Message {
