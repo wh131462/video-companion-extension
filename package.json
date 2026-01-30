@@ -11,7 +11,9 @@
     "test": "vitest",
     "test:coverage": "vitest --coverage",
     "lint": "eslint src --ext .ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "website": "npx serve website",
+    "website:prepare": "mkdir -p website/snapshots website/assets/images && cp docs/snapshots/*.png website/snapshots/ && cp public/icons/icon48.png website/assets/images/favicon-48.png && cp public/icons/icon16.png website/assets/images/favicon-16.png"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.0.0-beta.25",

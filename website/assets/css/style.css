@@ -1,0 +1,224 @@
+/* Video Companion Website - Custom Styles */
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+/* Gradient text */
+.gradient-text {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Glass card effect */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Feature card hover effect */
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -12px rgba(99, 102, 241, 0.3);
+}
+
+/* Screenshot container */
+.screenshot-container {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Screenshot tabs */
+.screenshot-tab {
+    transition: all 0.2s ease;
+}
+
+.screenshot-tab.active {
+    background-color: #6366f1 !important;
+    color: white !important;
+}
+
+/* Screenshot image transition */
+.screenshot-image {
+    transition: opacity 0.3s ease;
+}
+
+.screenshot-image.hidden {
+    display: none;
+}
+
+/* Code block */
+.code-block {
+    background: #1e1e2e;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+.code-block code {
+    white-space: pre;
+    display: block;
+    line-height: 1.6;
+}
+
+/* Keyboard key style */
+.kbd {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    background: #374151;
+    border: 1px solid #4b5563;
+    border-radius: 0.375rem;
+    box-shadow: 0 2px 0 #1f2937;
+}
+
+/* Platform item */
+.platform-item {
+    transition: transform 0.2s ease;
+}
+
+.platform-item:hover {
+    transform: scale(1.05);
+}
+
+/* Button hover effects */
+a[href="#install"],
+a[href*="github"] {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+a[href="#install"]:hover {
+    box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.5);
+}
+
+/* Mobile menu animation */
+#mobile-menu {
+    transition: all 0.3s ease;
+}
+
+#mobile-menu.hidden {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+#mobile-menu:not(.hidden) {
+    opacity: 1;
+    max-height: 200px;
+}
+
+/* Header shadow on scroll */
+header.shadow-lg {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Prose styles for privacy page */
+.prose h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.prose h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.prose p {
+    margin-bottom: 1rem;
+}
+
+.prose ul {
+    margin-bottom: 1rem;
+}
+
+.prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.prose table th,
+.prose table td {
+    border: 1px solid #374151;
+}
+
+/* Animation delays for staggered effect */
+[data-aos][data-aos-delay="100"] {
+    transition-delay: 100ms;
+}
+
+[data-aos][data-aos-delay="200"] {
+    transition-delay: 200ms;
+}
+
+[data-aos][data-aos-delay="300"] {
+    transition-delay: 300ms;
+}
+
+[data-aos][data-aos-delay="400"] {
+    transition-delay: 400ms;
+}
+
+[data-aos][data-aos-delay="500"] {
+    transition-delay: 500ms;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .screenshot-tab {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .feature-card {
+        padding: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 0.875rem;
+    }
+
+    .feature-card p {
+        font-size: 0.75rem;
+    }
+}
+
+/* Focus styles for accessibility */
+a:focus,
+button:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* Selection color */
+::selection {
+    background: rgba(99, 102, 241, 0.3);
+}
