@@ -19,7 +19,8 @@ export class FullscreenFeature implements VideoFeature {
         await document.exitFullscreen();
         return false;
       } else {
-        const container = findVideoContainer(video);
+        // 对视频父容器全屏，这样可以在全屏时显示右键菜单
+        const container = video.parentElement || video;
         await container.requestFullscreen();
         return true;
       }

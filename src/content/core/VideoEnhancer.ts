@@ -68,19 +68,16 @@ export class VideoEnhancer {
     // 检测是否有自定义控制器
     const hasCustom = hasCustomControls(video);
 
-    // 创建右键菜单（无论是否有自定义控制器都创建）
-    const contextMenu = new ContextMenu(video);
-    this.contextMenus.set(video, contextMenu);
-
-    // 设置右键菜单事件
-    video.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      contextMenu.show(e.clientX, e.clientY);
-    });
-
-    // 如果有自定义控制器，只用右键菜单，不显示控制面板
+    // 如果有自定义控制器，只创建右键菜单，不显示控制面板
     if (hasCustom) {
+      const contextMenu = new ContextMenu(video);
+      this.contextMenus.set(video, contextMenu);
+
+      video.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        contextMenu.show(e.clientX, e.clientY);
+      });
       return;
     }
 
@@ -93,6 +90,20 @@ export class VideoEnhancer {
     });
 
     this.panels.set(video, panel);
+
+    // 创建右键菜单，传递面板控制选项
+    const contextMenu = new ContextMenu(video, {
+      onShowPanel: () => this.togglePanel(video),
+      isPanelVisible: () => this.isPanelVisible(video),
+    });
+    this.contextMenus.set(video, contextMenu);
+
+    // 设置右键菜单事件
+    video.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      contextMenu.show(e.clientX, e.clientY);
+    });
 
     // 添加到视频父元素
     if (video.parentElement) {
@@ -132,6 +143,34 @@ export class VideoEnhancer {
 
   getPanel(video: HTMLVideoElement): ControlPanel | undefined {
     return this.panels.get(video);
+  }
+
+  // 切换面板显示状态
+  private togglePanel(video: HTMLVideoElement): void {
+    const panel = this.panels.get(video);
+    if (!panel) return;
+
+    const element = panel.getElement();
+    const isHidden = element.style.display === 'none';
+
+    if (isHidden) {
+      // 显示面板，并从关闭列表中移除
+      element.style.display = '';
+      panel.show();
+      const id = this.getVideoId(video);
+      this.closedPanels.delete(id);
+    } else {
+      // 隐藏面板
+      element.style.display = 'none';
+      this.markPanelClosed(video);
+    }
+  }
+
+  // 检查面板是否可见
+  private isPanelVisible(video: HTMLVideoElement): boolean {
+    const panel = this.panels.get(video);
+    if (!panel) return false;
+    return panel.getElement().style.display !== 'none';
   }
 
   getAllPanels(): ControlPanel[] {

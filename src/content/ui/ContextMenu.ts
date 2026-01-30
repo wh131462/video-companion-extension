@@ -26,13 +26,20 @@ interface MenuItem {
   divider?: boolean;
 }
 
+export interface ContextMenuOptions {
+  onShowPanel?: () => void;
+  isPanelVisible?: () => boolean;
+}
+
 export class ContextMenu {
   private element: HTMLDivElement;
   private video: HTMLVideoElement;
   private isVisible = false;
+  private options: ContextMenuOptions;
 
-  constructor(video: HTMLVideoElement) {
+  constructor(video: HTMLVideoElement, options: ContextMenuOptions = {}) {
     this.video = video;
+    this.options = options;
     this.element = this.create();
     this.setupEventListeners();
   }
@@ -67,8 +74,23 @@ export class ContextMenu {
     const currentSpeed = this.video.playbackRate;
     const isLooping = this.video.loop;
     const isMuted = this.video.muted;
+    const isFullscreen = !!document.fullscreenElement;
+    const isPanelVisible = this.options.isPanelVisible?.() ?? false;
 
-    return [
+    const items: MenuItem[] = [];
+
+    // 显示控制面板选项
+    if (this.options.onShowPanel) {
+      items.push({
+        label: '控制面板',
+        icon: Icons.showControls,
+        checked: isPanelVisible,
+        onClick: () => this.handleShowPanel(),
+      });
+      items.push({ divider: true });
+    }
+
+    items.push(
       {
         label: `倍速: ${formatSpeed(currentSpeed)}`,
         icon: Icons.speed,
@@ -80,13 +102,15 @@ export class ContextMenu {
       },
       { divider: true },
       {
-        label: isLooping ? '循环播放 ✓' : '循环播放',
+        label: '循环播放',
         icon: Icons.loop,
+        checked: isLooping,
         onClick: () => this.handleLoop(),
       },
       {
-        label: isMuted ? '静音 ✓' : '静音',
+        label: '静音',
         icon: isMuted ? Icons.mute : Icons.volume,
+        checked: isMuted,
         onClick: () => this.handleMute(),
       },
       { divider: true },
@@ -96,7 +120,7 @@ export class ContextMenu {
         onClick: () => this.handlePiP(),
       },
       {
-        label: '全屏',
+        label: isFullscreen ? '退出全屏' : '全屏',
         icon: Icons.fullscreen,
         onClick: () => this.handleFullscreen(),
       },
@@ -115,8 +139,10 @@ export class ContextMenu {
         label: '下载视频',
         icon: Icons.download,
         onClick: () => this.handleDownload(),
-      },
-    ];
+      }
+    );
+
+    return items;
   }
 
   private renderMenu(): void {
@@ -151,6 +177,14 @@ export class ContextMenu {
         labelSpan.className = 'vc-menu-label';
         labelSpan.textContent = item.label;
         menuItem.appendChild(labelSpan);
+      }
+
+      // 对钩（放在右侧）
+      if (item.checked && !item.submenu) {
+        const checkSpan = document.createElement('span');
+        checkSpan.className = 'vc-menu-check';
+        checkSpan.innerHTML = '✓';
+        menuItem.appendChild(checkSpan);
       }
 
       // 子菜单箭头
@@ -194,6 +228,14 @@ export class ContextMenu {
       labelSpan.textContent = item.label || '';
       menuItem.appendChild(labelSpan);
 
+      // 子菜单项的对钩
+      if (item.checked) {
+        const checkSpan = document.createElement('span');
+        checkSpan.className = 'vc-menu-check';
+        checkSpan.innerHTML = '✓';
+        menuItem.appendChild(checkSpan);
+      }
+
       if (item.onClick) {
         menuItem.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -210,6 +252,19 @@ export class ContextMenu {
 
   show(x: number, y: number): void {
     this.renderMenu();
+
+    // 全屏模式下，将菜单添加到全屏元素内部；否则添加到 body
+    const fullscreenElement = document.fullscreenElement;
+    if (fullscreenElement) {
+      if (!fullscreenElement.contains(this.element)) {
+        fullscreenElement.appendChild(this.element);
+      }
+    } else {
+      // 非全屏模式：确保菜单在 body 中
+      if (this.element.parentElement !== document.body) {
+        document.body.appendChild(this.element);
+      }
+    }
 
     // 先显示以获取尺寸
     this.element.style.visibility = 'hidden';
@@ -247,6 +302,10 @@ export class ContextMenu {
   }
 
   // === 功能处理方法 ===
+
+  private handleShowPanel(): void {
+    this.options.onShowPanel?.();
+  }
 
   private handleSpeedChange(speed: number): void {
     playbackSpeed.setSpeed(this.video, speed);
