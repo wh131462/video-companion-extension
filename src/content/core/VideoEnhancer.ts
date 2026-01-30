@@ -11,9 +11,34 @@ export class VideoEnhancer {
   private scanner: VideoScanner;
   private panels = new Map<HTMLVideoElement, ControlPanel>();
   private settings: UserSettings = DEFAULT_SETTINGS;
+  // 记录用户手动关闭面板的视频 ID
+  private closedPanels = new Set<string>();
+  private videoIdCounter = 0;
 
   constructor() {
     this.scanner = new VideoScanner((video) => this.enhanceVideo(video));
+  }
+
+  // 获取或生成视频的唯一 ID
+  private getVideoId(video: HTMLVideoElement): string {
+    let id = video.dataset.vcId;
+    if (!id) {
+      id = `vc-video-${++this.videoIdCounter}`;
+      video.dataset.vcId = id;
+    }
+    return id;
+  }
+
+  // 标记某个视频的面板为已关闭
+  markPanelClosed(video: HTMLVideoElement): void {
+    const id = this.getVideoId(video);
+    this.closedPanels.add(id);
+  }
+
+  // 检查某个视频的面板是否被关闭
+  isPanelClosed(video: HTMLVideoElement): boolean {
+    const id = this.getVideoId(video);
+    return this.closedPanels.has(id);
   }
 
   start(): void {
@@ -32,11 +57,15 @@ export class VideoEnhancer {
   }
 
   private enhanceVideo(video: HTMLVideoElement): void {
+    // 为视频生成 ID
+    this.getVideoId(video);
+
     // 创建控制面板
     const panel = new ControlPanel({
       video,
       autoHide: this.settings.autoHidePanel,
       hideDelay: this.settings.autoHideDelay,
+      onClose: () => this.markPanelClosed(video),
     });
 
     this.panels.set(video, panel);
@@ -45,6 +74,14 @@ export class VideoEnhancer {
     if (video.parentElement) {
       video.parentElement.style.position = 'relative';
       video.parentElement.appendChild(panel.getElement());
+    }
+
+    // 检查是否被用户手动关闭过，如果是则不显示
+    if (this.isPanelClosed(video)) {
+      panel.getElement().style.display = 'none';
+    } else {
+      // 初始显示面板（autoHide 会在一段时间后自动隐藏）
+      panel.show();
     }
 
     // 应用默认速度

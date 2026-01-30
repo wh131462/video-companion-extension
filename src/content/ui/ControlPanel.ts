@@ -24,6 +24,7 @@ export interface ControlPanelOptions {
   video: HTMLVideoElement;
   autoHide?: boolean;
   hideDelay?: number;
+  onClose?: () => void;
 }
 
 interface ButtonConfig {
@@ -45,6 +46,7 @@ export class ControlPanel {
   private hideTimeout: ReturnType<typeof setTimeout> | null = null;
   private autoHide: boolean;
   private hideDelay: number;
+  private onClose?: () => void;
 
   // 进度条相关
   private progressSection: HTMLDivElement | null = null;
@@ -63,6 +65,7 @@ export class ControlPanel {
     this.video = options.video;
     this.autoHide = options.autoHide ?? true;
     this.hideDelay = options.hideDelay ?? PANEL_HIDE_DELAY;
+    this.onClose = options.onClose;
 
     this.speedMenu = new SpeedMenu({
       onSpeedChange: (speed) => this.handleSpeedChange(speed),
@@ -81,6 +84,17 @@ export class ControlPanel {
     const panel = document.createElement('div');
     panel.className = CSS_CLASSES.panel;
 
+    // 关闭按钮（右上角）
+    const closeButton = document.createElement('button');
+    closeButton.className = 'vc-close-btn';
+    closeButton.innerHTML = Icons.close;
+    closeButton.title = '关闭面板';
+    closeButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.close();
+    });
+    panel.appendChild(closeButton);
+
     // 进度条区域（默认隐藏）
     this.progressSection = this.createProgressSection();
     panel.appendChild(this.progressSection);
@@ -91,15 +105,18 @@ export class ControlPanel {
 
     // === 重新排序的按钮 ===
 
-    // 1. 倍速按钮（最常用）
+    // 1. 倍速按钮（最常用）- 包裹在容器中以正确定位菜单
+    const speedWrapper = document.createElement('div');
+    speedWrapper.className = 'vc-speed-wrapper';
     this.speedButton = this.createButton({
       icon: formatSpeed(this.video.playbackRate),
       title: '倍速',
       onClick: () => this.speedMenu.toggle(),
       className: CSS_CLASSES.speedButton,
     });
-    buttonContainer.appendChild(this.speedButton);
-    buttonContainer.appendChild(this.speedMenu.getElement());
+    speedWrapper.appendChild(this.speedButton);
+    speedWrapper.appendChild(this.speedMenu.getElement());
+    buttonContainer.appendChild(speedWrapper);
 
     // 2. 循环按钮
     this.loopButton = this.createButton({
@@ -599,6 +616,13 @@ export class ControlPanel {
 
   getElement(): HTMLDivElement {
     return this.element;
+  }
+
+  close(): void {
+    this.element.style.display = 'none';
+    // 通知 VideoEnhancer 记录此面板已关闭
+    this.onClose?.();
+    showToast('面板已关闭，刷新页面可恢复');
   }
 
   destroy(): void {

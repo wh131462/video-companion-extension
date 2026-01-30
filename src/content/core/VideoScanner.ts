@@ -37,6 +37,9 @@ export class VideoScanner {
       clearInterval(this.scanInterval);
       this.scanInterval = null;
     }
+
+    // 重置已处理视频集合，允许重新启用时重新扫描
+    this.processedVideos = new WeakSet<HTMLVideoElement>();
   }
 
   scan(): void {
