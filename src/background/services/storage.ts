@@ -8,7 +8,8 @@ import { DEFAULT_SETTINGS, DEFAULT_STATS } from '@shared/constants';
 class StorageService {
   async getSettings(): Promise<UserSettings> {
     const data = await chrome.storage.local.get('settings');
-    return data.settings || DEFAULT_SETTINGS;
+    // 合并默认设置，确保新增字段有默认值
+    return { ...DEFAULT_SETTINGS, ...data.settings };
   }
 
   async saveSettings(settings: UserSettings): Promise<void> {

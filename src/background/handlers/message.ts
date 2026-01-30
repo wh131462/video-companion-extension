@@ -65,3 +65,16 @@ export function broadcastSettingsChange(settings: UserSettings): void {
     });
   });
 }
+
+export function broadcastExtensionState(enabled: boolean): void {
+  const action = enabled ? 'extensionEnabled' : 'extensionDisabled';
+  chrome.tabs.query({}, (tabs) => {
+    tabs.forEach((tab) => {
+      if (tab.id) {
+        chrome.tabs.sendMessage(tab.id, { action }).catch(() => {
+          // 忽略无法接收消息的标签页
+        });
+      }
+    });
+  });
+}
