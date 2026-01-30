@@ -6,31 +6,28 @@ import './styles/index.css';
 import type { UserSettings } from '@shared/types';
 import { DEFAULT_SETTINGS } from '@shared/constants';
 import { sendMessage } from '@shared/utils';
-import { videoEnhancer } from './core/VideoEnhancer';
+import { extensionController } from './core/ExtensionController';
 import { setupMessageHandler } from './handlers/message';
-import { setupKeyboardHandler } from './handlers/keyboard';
 
 async function loadSettings(): Promise<UserSettings> {
-  const response = await sendMessage<UserSettings>({ action: 'getSettings' });
-  return response || DEFAULT_SETTINGS;
+  const response = await sendMessage<{ success: boolean; data?: UserSettings }>({ action: 'getSettings' });
+  return response?.data || DEFAULT_SETTINGS;
 }
 
 async function init(): Promise<void> {
   try {
     // 加载用户设置
     const settings = await loadSettings();
-    videoEnhancer.updateSettings(settings);
 
-    // 设置消息处理器
+    // 设置消息处理器（始终需要，用于接收启用/禁用消息）
     setupMessageHandler();
 
-    // 设置键盘快捷键
-    if (settings.enableShortcuts) {
-      setupKeyboardHandler();
+    // 只有在启用状态下才启动
+    if (settings.enabled) {
+      extensionController.enable(settings);
+    } else {
+      console.log('Video Companion: 扩展已禁用，等待启用');
     }
-
-    // 启动视频扫描器
-    videoEnhancer.start();
 
     console.log('Video Companion: 初始化完成');
   } catch (error) {

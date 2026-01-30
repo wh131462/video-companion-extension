@@ -3,7 +3,10 @@
  */
 
 import type { Message, MessageResponse, UserSettings } from '@shared/types';
+import { DEFAULT_SETTINGS } from '@shared/constants';
+import { sendMessage } from '@shared/utils';
 import { videoEnhancer } from '../core/VideoEnhancer';
+import { extensionController } from '../core/ExtensionController';
 import { showToast } from '../ui/Toast';
 import { pictureInPicture, fullscreen, playbackSpeed } from '../features';
 
@@ -78,6 +81,20 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       if (message.settings) {
         videoEnhancer.updateSettings(message.settings as UserSettings);
       }
+      return { success: true };
+
+    case 'extensionEnabled': {
+      // 重新获取最新设置并启用
+      const response = await sendMessage<{ success: boolean; data?: UserSettings }>({ action: 'getSettings' });
+      const settings = response?.data || DEFAULT_SETTINGS;
+      extensionController.enable(settings);
+      showToast('Video Companion 已启用');
+      return { success: true };
+    }
+
+    case 'extensionDisabled':
+      extensionController.disable();
+      showToast('Video Companion 已禁用');
       return { success: true };
 
     default:
