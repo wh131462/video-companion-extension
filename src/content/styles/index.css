@@ -840,7 +840,7 @@
 .vc-submenu {
   position: absolute;
   left: 100%;
-  top: 0;
+  top: -6px;
   min-width: 100px;
   padding: 6px 0;
   background: rgba(28, 28, 32, 0.95);
@@ -851,6 +851,16 @@
   -webkit-backdrop-filter: blur(20px);
   display: none;
   margin-left: 4px;
+}
+
+/* 创建透明桥接区域，防止鼠标滑过间隙时子菜单关闭 */
+.vc-submenu::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 0;
+  width: 12px;
+  height: 100%;
 }
 
 .vc-menu-item-has-submenu:hover .vc-submenu {
