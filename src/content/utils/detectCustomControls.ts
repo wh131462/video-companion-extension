@@ -64,7 +64,7 @@ export function hasCustomControls(video: HTMLVideoElement): boolean {
 /**
  * 查找视频容器
  */
-function findVideoContainer(video: HTMLVideoElement): HTMLElement {
+export function findVideoContainer(video: HTMLVideoElement): HTMLElement {
   // 向上查找最多 5 层父元素
   let current: HTMLElement | null = video.parentElement;
   let depth = 0;

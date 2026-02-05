@@ -7,13 +7,15 @@ import { DEFAULT_SETTINGS } from '@shared/constants';
 import { ControlPanel } from '../ui/ControlPanel';
 import { ContextMenu } from '../ui/ContextMenu';
 import { VideoScanner } from './VideoScanner';
-import { hasCustomControls } from '../utils/detectCustomControls';
+import { hasCustomControls, findVideoContainer } from '../utils/detectCustomControls';
 
 export class VideoEnhancer {
   private scanner: VideoScanner;
   private panels = new Map<HTMLVideoElement, ControlPanel>();
   private contextMenus = new Map<HTMLVideoElement, ContextMenu>();
   private contextMenuHandlers = new Map<HTMLVideoElement, (e: MouseEvent) => void>();
+  // 记录右键菜单事件实际绑定的容器元素（可能是视频容器而非 video 本身）
+  private contextMenuTargets = new Map<HTMLVideoElement, HTMLElement>();
   private settings: UserSettings = DEFAULT_SETTINGS;
   // 记录用户手动关闭面板的视频 ID
   private closedPanels = new Set<string>();
@@ -55,11 +57,13 @@ export class VideoEnhancer {
     this.panels.clear();
     this.contextMenus.forEach((menu) => menu.destroy());
     this.contextMenus.clear();
-    // 移除右键菜单事件处理器
+    // 移除右键菜单事件处理器（从实际绑定的容器上移除）
     this.contextMenuHandlers.forEach((handler, video) => {
-      video.removeEventListener('contextmenu', handler);
+      const target = this.contextMenuTargets.get(video) || video;
+      target.removeEventListener('contextmenu', handler, true);
     });
     this.contextMenuHandlers.clear();
+    this.contextMenuTargets.clear();
   }
 
   updateSettings(settings: Partial<UserSettings>): void {
@@ -86,8 +90,12 @@ export class VideoEnhancer {
           e.stopPropagation();
           contextMenu.show(e.clientX, e.clientY);
         };
-        video.addEventListener('contextmenu', handler);
+        // 将事件绑定到视频容器上（而非 video 元素），使用 capture 阶段
+        // 这样即使有覆盖层（水印、弹幕、poster 等）也能捕获右键事件
+        const eventTarget = findVideoContainer(video);
+        eventTarget.addEventListener('contextmenu', handler, true);
         this.contextMenuHandlers.set(video, handler);
+        this.contextMenuTargets.set(video, eventTarget);
       }
       return;
     }
@@ -132,14 +140,16 @@ export class VideoEnhancer {
       });
       this.contextMenus.set(video, contextMenu);
 
-      // 设置右键菜单事件
+      // 设置右键菜单事件 - 绑定到视频容器上，使用 capture 阶段穿透覆盖层
       const handler = (e: MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         contextMenu.show(e.clientX, e.clientY);
       };
-      video.addEventListener('contextmenu', handler);
+      const eventTarget = findVideoContainer(video);
+      eventTarget.addEventListener('contextmenu', handler, true);
       this.contextMenuHandlers.set(video, handler);
+      this.contextMenuTargets.set(video, eventTarget);
     }
   }
 
@@ -165,9 +175,11 @@ export class VideoEnhancer {
         menu.hide();
       });
       this.contextMenuHandlers.forEach((handler, video) => {
-        video.removeEventListener('contextmenu', handler);
+        const target = this.contextMenuTargets.get(video) || video;
+        target.removeEventListener('contextmenu', handler, true);
       });
       this.contextMenuHandlers.clear();
+      this.contextMenuTargets.clear();
     } else {
       // 重新添加右键菜单事件处理器（如果还没有）
       this.contextMenus.forEach((menu, video) => {
@@ -177,8 +189,10 @@ export class VideoEnhancer {
             e.stopPropagation();
             menu.show(e.clientX, e.clientY);
           };
-          video.addEventListener('contextmenu', handler);
+          const eventTarget = findVideoContainer(video);
+          eventTarget.addEventListener('contextmenu', handler, true);
           this.contextMenuHandlers.set(video, handler);
+          this.contextMenuTargets.set(video, eventTarget);
         }
       });
     }
