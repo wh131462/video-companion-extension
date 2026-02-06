@@ -5,7 +5,7 @@
 import type { UserSettings, Stats } from './types';
 
 // 倍速选项
-export const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.5, 3] as const;
+export const SPEED_OPTIONS = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 3, 4, 8, 16] as const;
 
 // 默认设置
 export const DEFAULT_SETTINGS: UserSettings = {
@@ -68,7 +68,7 @@ export const SPEED_STEP = 0.25;
 // 速度范围
 export const SPEED_RANGE = {
   min: 0.25,
-  max: 3,
+  max: 16,
 };
 
 // Z-Index 层级

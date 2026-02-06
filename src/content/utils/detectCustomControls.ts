@@ -16,16 +16,18 @@ interface DetectionResult {
   detectedBy: string;
 }
 
-// 常见视频网站的自定义控制器选择器
-const CUSTOM_CONTROLS_SELECTORS = [
+// 已知网站的自定义控制器选择器（在整个文档中查找）
+const KNOWN_SITE_SELECTORS = [
   // YouTube
   '.ytp-chrome-bottom',
   '.ytp-chrome-controls',
 
-  // Bilibili
+  // Bilibili (新旧版播放器)
   '.bilibili-player-video-control',
   '.bpx-player-control-wrap',
+  '.bpx-player-control-bottom',
   '.squirtle-controller',
+  '.bpx-player-container',
 
   // 腾讯视频
   '.txp_btn_control_wrap',
@@ -42,8 +44,10 @@ const CUSTOM_CONTROLS_SELECTORS = [
   // 西瓜视频/抖音
   '.xgplayer-controls',
   '.xg-controls',
+];
 
-  // 通用选择器
+// 通用选择器（在容器内查找）
+const GENERIC_CONTROL_SELECTORS = [
   '[class*="player-control"]',
   '[class*="video-control"]',
   '[class*="-controls"]',
@@ -117,7 +121,20 @@ export function hasCustomControls(video: HTMLVideoElement): boolean {
  * 匹配已知的选择器
  */
 function matchKnownSelectors(container: HTMLElement): boolean {
-  for (const selector of CUSTOM_CONTROLS_SELECTORS) {
+  // 1. 在整个文档中查找已知网站的选择器
+  for (const selector of KNOWN_SITE_SELECTORS) {
+    try {
+      const controls = document.querySelector(selector);
+      if (controls && isElementVisible(controls as HTMLElement)) {
+        return true;
+      }
+    } catch {
+      // 选择器可能无效，跳过
+    }
+  }
+
+  // 2. 在容器内查找通用选择器
+  for (const selector of GENERIC_CONTROL_SELECTORS) {
     try {
       const controls = container.querySelector(selector);
       if (controls && isElementVisible(controls as HTMLElement)) {
@@ -127,6 +144,7 @@ function matchKnownSelectors(container: HTMLElement): boolean {
       // 选择器可能无效，跳过
     }
   }
+
   return false;
 }
 
