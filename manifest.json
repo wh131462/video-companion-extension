@@ -6,8 +6,7 @@
   "minimum_chrome_version": "122",
   "permissions": [
     "activeTab",
-    "storage",
-    "contextMenus"
+    "storage"
   ],
   "host_permissions": [
     "<all_urls>"
