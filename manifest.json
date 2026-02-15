@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Video Companion",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "增强网页视频播放体验 - 画中画、全屏、倍速控制等",
   "minimum_chrome_version": "122",
   "permissions": [
