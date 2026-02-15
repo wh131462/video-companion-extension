@@ -1,32 +1,74 @@
 /**
  * 视频增强器主类
+ * 重构版本：使用 VideoRegistry 和 VideoLifecycleManager
  */
 
 import type { UserSettings } from '@shared/types';
-import { DEFAULT_SETTINGS } from '@shared/constants';
+import { DEFAULT_SETTINGS, FEATURE_FLAGS } from '@shared/constants';
 import { ControlPanel } from '../ui/ControlPanel';
 import { ContextMenu } from '../ui/ContextMenu';
 import { VideoScanner } from './VideoScanner';
-import { hasCustomControls, findVideoContainer } from '../utils/detectCustomControls';
+import { VideoRegistry, videoRegistry } from './VideoRegistry';
+import { VideoLifecycleManager } from './VideoLifecycleManager';
+import {
+  hasCustomControls,
+  findVideoContainer,
+  detectionCache,
+  containerDetector,
+} from '../utils/detectCustomControls';
+
+/**
+ * 检查点击位置是否在视频元素的可视范围内
+ */
+function isClickWithinVideo(e: MouseEvent, video: HTMLVideoElement): boolean {
+  try {
+    const rect = video.getBoundingClientRect();
+    return (
+      e.clientX >= rect.left &&
+      e.clientX <= rect.right &&
+      e.clientY >= rect.top &&
+      e.clientY <= rect.bottom
+    );
+  } catch {
+    return false;
+  }
+}
 
 export class VideoEnhancer {
-  private scanner: VideoScanner;
+  // 旧版组件（兼容层）
+  private scanner: VideoScanner | null = null;
+
+  // 新版组件
+  private registry: VideoRegistry;
+  private lifecycleManager: VideoLifecycleManager | null = null;
+
+  // 旧版 Maps（当 FEATURE_FLAGS.USE_VIDEO_REGISTRY 为 false 时使用）
   private panels = new Map<HTMLVideoElement, ControlPanel>();
   private contextMenus = new Map<HTMLVideoElement, ContextMenu>();
   private contextMenuHandlers = new Map<HTMLVideoElement, (e: MouseEvent) => void>();
-  // 记录右键菜单事件实际绑定的容器元素（可能是视频容器而非 video 本身）
   private contextMenuTargets = new Map<HTMLVideoElement, HTMLElement>();
-  private settings: UserSettings = DEFAULT_SETTINGS;
-  // 记录用户手动关闭面板的视频 ID
   private closedPanels = new Set<string>();
   private videoIdCounter = 0;
 
+  private settings: UserSettings = DEFAULT_SETTINGS;
+
   constructor() {
-    this.scanner = new VideoScanner((video) => this.enhanceVideo(video));
+    this.registry = videoRegistry;
+
+    // 设置 GC 回调
+    this.registry.onVideoCollected = (id) => {
+      console.debug(`[Video Companion] Video ${id} was garbage collected`);
+    };
   }
 
   // 获取或生成视频的唯一 ID
   private getVideoId(video: HTMLVideoElement): string {
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      const state = this.registry.get(video);
+      return state?.id || video.dataset.vcId || '';
+    }
+
+    // 旧版逻辑
     let id = video.dataset.vcId;
     if (!id) {
       id = `vc-video-${++this.videoIdCounter}`;
@@ -37,33 +79,144 @@ export class VideoEnhancer {
 
   // 标记某个视频的面板为已关闭
   markPanelClosed(video: HTMLVideoElement): void {
-    const id = this.getVideoId(video);
-    this.closedPanels.add(id);
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      this.registry.markPanelClosed(video);
+    } else {
+      const id = this.getVideoId(video);
+      this.closedPanels.add(id);
+    }
   }
 
   // 检查某个视频的面板是否被关闭
   isPanelClosed(video: HTMLVideoElement): boolean {
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      const state = this.registry.get(video);
+      return state?.isPanelClosed ?? false;
+    }
+
     const id = this.getVideoId(video);
     return this.closedPanels.has(id);
   }
 
   start(): void {
-    this.scanner.start();
+    if (FEATURE_FLAGS.USE_LIFECYCLE_MANAGER) {
+      // 使用新版生命周期管理器
+      this.lifecycleManager = new VideoLifecycleManager({
+        onVideoAdded: (video) => this.enhanceVideo(video),
+        onVideoRemoved: (video) => this.cleanupVideo(video),
+        onVideoReplaced: (oldVideo, newVideo) => {
+          this.cleanupVideo(oldVideo);
+          this.enhanceVideo(newVideo);
+        },
+        onVideoResized: (video) => {
+          // 视频尺寸变化时可能需要重新检测
+          if (FEATURE_FLAGS.USE_DETECTION_CACHE) {
+            detectionCache.invalidate(video);
+          }
+        },
+      });
+      this.lifecycleManager.start();
+    } else {
+      // 使用旧版扫描器
+      this.scanner = new VideoScanner((video) => this.enhanceVideo(video));
+      this.scanner.start();
+    }
   }
 
   stop(): void {
-    this.scanner.stop();
-    this.panels.forEach((panel) => panel.destroy());
-    this.panels.clear();
-    this.contextMenus.forEach((menu) => menu.destroy());
-    this.contextMenus.clear();
-    // 移除右键菜单事件处理器（从实际绑定的容器上移除）
-    this.contextMenuHandlers.forEach((handler, video) => {
-      const target = this.contextMenuTargets.get(video) || video;
-      target.removeEventListener('contextmenu', handler, true);
-    });
-    this.contextMenuHandlers.clear();
-    this.contextMenuTargets.clear();
+    // 停止生命周期管理器或扫描器
+    if (this.lifecycleManager) {
+      this.lifecycleManager.stop();
+      this.lifecycleManager = null;
+    }
+    if (this.scanner) {
+      this.scanner.stop();
+      this.scanner = null;
+    }
+
+    // 清理所有视频
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      this.registry.forEach((video, state) => {
+        this.cleanupVideoState(video, state);
+      });
+    } else {
+      // 旧版清理逻辑
+      this.panels.forEach((panel) => panel.destroy());
+      this.panels.clear();
+      this.contextMenus.forEach((menu) => menu.destroy());
+      this.contextMenus.clear();
+      this.contextMenuHandlers.forEach((handler) => {
+        document.removeEventListener('contextmenu', handler, true);
+      });
+      this.contextMenuHandlers.clear();
+      this.contextMenuTargets.clear();
+    }
+  }
+
+  /**
+   * 清理单个视频的资源
+   */
+  private cleanupVideo(video: HTMLVideoElement): void {
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      const state = this.registry.get(video);
+      if (state) {
+        this.cleanupVideoState(video, state);
+        this.registry.unregister(video);
+      }
+    } else {
+      // 旧版清理逻辑
+      const panel = this.panels.get(video);
+      if (panel) {
+        panel.destroy();
+        this.panels.delete(video);
+      }
+
+      const menu = this.contextMenus.get(video);
+      if (menu) {
+        menu.destroy();
+        this.contextMenus.delete(video);
+      }
+
+      const handler = this.contextMenuHandlers.get(video);
+      if (handler) {
+        document.removeEventListener('contextmenu', handler, true);
+        this.contextMenuHandlers.delete(video);
+        this.contextMenuTargets.delete(video);
+      }
+    }
+
+    // 清理缓存
+    if (FEATURE_FLAGS.USE_DETECTION_CACHE) {
+      detectionCache.invalidate(video);
+    }
+    if (FEATURE_FLAGS.USE_WEIGHTED_CONTAINER) {
+      containerDetector.invalidate(video);
+    }
+  }
+
+  /**
+   * 清理视频状态（内部使用）
+   */
+  private cleanupVideoState(
+    _video: HTMLVideoElement,
+    state: ReturnType<VideoRegistry['get']>
+  ): void {
+    if (!state) return;
+
+    // 销毁面板
+    if (state.panel) {
+      state.panel.destroy();
+    }
+
+    // 销毁右键菜单
+    if (state.contextMenu) {
+      state.contextMenu.destroy();
+    }
+
+    // 移除事件处理器
+    if (state.eventHandler) {
+      document.removeEventListener('contextmenu', state.eventHandler, true);
+    }
   }
 
   updateSettings(settings: Partial<UserSettings>): void {
@@ -72,44 +225,75 @@ export class VideoEnhancer {
   }
 
   private enhanceVideo(video: HTMLVideoElement): void {
-    // 为视频生成 ID
-    this.getVideoId(video);
-
     // 检测是否有自定义控制器
     const hasCustom = hasCustomControls(video);
+    const container = findVideoContainer(video);
 
-    // 如果有自定义控制器，只创建右键菜单，不显示控制面板
-    if (hasCustom) {
-      // 只有在启用右键菜单时才创建
-      if (this.settings.showContextMenu) {
-        const contextMenu = new ContextMenu(video);
-        this.contextMenus.set(video, contextMenu);
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      // 注册视频
+      const state = this.registry.register(video, container);
+      state.hasCustomControls = hasCustom;
 
-        const handler = (e: MouseEvent) => {
-          e.preventDefault();
-          e.stopPropagation();
-          contextMenu.show(e.clientX, e.clientY);
-        };
-        // 将事件绑定到视频容器上（而非 video 元素），使用 capture 阶段
-        // 这样即使有覆盖层（水印、弹幕、poster 等）也能捕获右键事件
-        const eventTarget = findVideoContainer(video);
-        eventTarget.addEventListener('contextmenu', handler, true);
-        this.contextMenuHandlers.set(video, handler);
-        this.contextMenuTargets.set(video, eventTarget);
+      if (hasCustom) {
+        this.setupContextMenuOnly(video, state);
+      } else {
+        this.setupFullEnhancement(video, state);
       }
-      return;
-    }
+    } else {
+      // 旧版逻辑
+      this.getVideoId(video);
 
-    // 创建控制面板（只有原生视频且启用时才创建）
+      if (hasCustom) {
+        this.setupContextMenuOnlyLegacy(video);
+      } else {
+        this.setupFullEnhancementLegacy(video);
+      }
+    }
+  }
+
+  /**
+   * 仅设置右键菜单（自定义控制器视频）
+   */
+  private setupContextMenuOnly(
+    video: HTMLVideoElement,
+    state: NonNullable<ReturnType<VideoRegistry['get']>>
+  ): void {
+    if (!this.settings.showContextMenu) return;
+
+    const contextMenu = new ContextMenu(video);
+    const container = state.container;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target || target.closest('.vc-context-menu')) return;
+      if (!container.contains(target) && !isClickWithinVideo(e, video)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      contextMenu.show(e.clientX, e.clientY);
+    };
+
+    document.addEventListener('contextmenu', handler, true);
+
+    // 更新状态
+    this.registry.setUI(video, undefined, contextMenu, handler);
+  }
+
+  /**
+   * 设置完整增强（原生视频）
+   */
+  private setupFullEnhancement(
+    video: HTMLVideoElement,
+    state: NonNullable<ReturnType<VideoRegistry['get']>>
+  ): void {
+    let panel: ControlPanel | undefined;
+
+    // 创建控制面板
     if (this.settings.showPanel) {
-      const panel = new ControlPanel({
+      panel = new ControlPanel({
         video,
         autoHide: this.settings.autoHidePanel,
         hideDelay: this.settings.autoHideDelay,
         onClose: () => this.markPanelClosed(video),
       });
-
-      this.panels.set(video, panel);
 
       // 添加到视频父元素
       if (video.parentElement) {
@@ -117,11 +301,10 @@ export class VideoEnhancer {
         video.parentElement.appendChild(panel.getElement());
       }
 
-      // 检查是否被用户手动关闭过，如果是则不显示
-      if (this.isPanelClosed(video)) {
+      // 检查是否被用户手动关闭过
+      if (state.isPanelClosed) {
         panel.getElement().style.display = 'none';
       } else {
-        // 初始显示面板（autoHide 会在一段时间后自动隐藏）
         panel.show();
       }
 
@@ -132,7 +315,90 @@ export class VideoEnhancer {
       }
     }
 
-    // 创建右键菜单（只有在启用时才创建）
+    // 创建右键菜单
+    let contextMenu: ContextMenu | undefined;
+    let handler: ((e: MouseEvent) => void) | undefined;
+
+    if (this.settings.showContextMenu) {
+      contextMenu = new ContextMenu(video, {
+        onShowPanel: () => this.togglePanel(video),
+        isPanelVisible: () => this.isPanelVisible(video),
+      });
+
+      const ctxContainer = state.container;
+      handler = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (!target || target.closest('.vc-context-menu')) return;
+        if (!ctxContainer.contains(target) && !isClickWithinVideo(e, video)) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        contextMenu!.show(e.clientX, e.clientY);
+      };
+
+      document.addEventListener('contextmenu', handler, true);
+    }
+
+    // 更新状态
+    this.registry.setUI(video, panel, contextMenu, handler);
+  }
+
+  /**
+   * 旧版：仅设置右键菜单
+   */
+  private setupContextMenuOnlyLegacy(video: HTMLVideoElement): void {
+    if (!this.settings.showContextMenu) return;
+
+    const contextMenu = new ContextMenu(video);
+    this.contextMenus.set(video, contextMenu);
+
+    const eventTarget = findVideoContainer(video);
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target || target.closest('.vc-context-menu')) return;
+      if (!eventTarget.contains(target) && !isClickWithinVideo(e, video)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      contextMenu.show(e.clientX, e.clientY);
+    };
+
+    document.addEventListener('contextmenu', handler, true);
+    this.contextMenuHandlers.set(video, handler);
+    this.contextMenuTargets.set(video, eventTarget);
+  }
+
+  /**
+   * 旧版：设置完整增强
+   */
+  private setupFullEnhancementLegacy(video: HTMLVideoElement): void {
+    // 创建控制面板
+    if (this.settings.showPanel) {
+      const panel = new ControlPanel({
+        video,
+        autoHide: this.settings.autoHidePanel,
+        hideDelay: this.settings.autoHideDelay,
+        onClose: () => this.markPanelClosed(video),
+      });
+
+      this.panels.set(video, panel);
+
+      if (video.parentElement) {
+        video.parentElement.style.position = 'relative';
+        video.parentElement.appendChild(panel.getElement());
+      }
+
+      if (this.isPanelClosed(video)) {
+        panel.getElement().style.display = 'none';
+      } else {
+        panel.show();
+      }
+
+      if (this.settings.defaultSpeed !== 1) {
+        video.playbackRate = this.settings.defaultSpeed;
+        panel.updateSpeedDisplay(this.settings.defaultSpeed);
+      }
+    }
+
+    // 创建右键菜单
     if (this.settings.showContextMenu) {
       const contextMenu = new ContextMenu(video, {
         onShowPanel: () => this.togglePanel(video),
@@ -140,109 +406,159 @@ export class VideoEnhancer {
       });
       this.contextMenus.set(video, contextMenu);
 
-      // 设置右键菜单事件 - 绑定到视频容器上，使用 capture 阶段穿透覆盖层
+      const eventTarget = findVideoContainer(video);
       const handler = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (!target || target.closest('.vc-context-menu')) return;
+        if (!eventTarget.contains(target) && !isClickWithinVideo(e, video)) return;
         e.preventDefault();
-        e.stopPropagation();
+        e.stopImmediatePropagation();
         contextMenu.show(e.clientX, e.clientY);
       };
-      const eventTarget = findVideoContainer(video);
-      eventTarget.addEventListener('contextmenu', handler, true);
+      document.addEventListener('contextmenu', handler, true);
       this.contextMenuHandlers.set(video, handler);
       this.contextMenuTargets.set(video, eventTarget);
     }
   }
 
   private applySettings(): void {
-    // 应用控制面板设置
-    this.panels.forEach((panel, video) => {
-      if (!this.settings.showPanel) {
-        panel.getElement().style.display = 'none';
-      } else {
-        panel.getElement().style.display = '';
-      }
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      this.registry.forEach((video, state) => {
+        if (!state) return;
 
-      if (this.settings.defaultSpeed !== video.playbackRate) {
-        video.playbackRate = this.settings.defaultSpeed;
-        panel.updateSpeedDisplay(this.settings.defaultSpeed);
-      }
-    });
+        // 应用面板设置
+        if (state.panel) {
+          if (!this.settings.showPanel) {
+            state.panel.getElement().style.display = 'none';
+          } else {
+            state.panel.getElement().style.display = '';
+          }
 
-    // 应用右键菜单设置
-    if (!this.settings.showContextMenu) {
-      // 隐藏所有右键菜单并移除事件处理器
-      this.contextMenus.forEach((menu) => {
-        menu.hide();
-      });
-      this.contextMenuHandlers.forEach((handler, video) => {
-        const target = this.contextMenuTargets.get(video) || video;
-        target.removeEventListener('contextmenu', handler, true);
-      });
-      this.contextMenuHandlers.clear();
-      this.contextMenuTargets.clear();
-    } else {
-      // 重新添加右键菜单事件处理器（如果还没有）
-      this.contextMenus.forEach((menu, video) => {
-        if (!this.contextMenuHandlers.has(video)) {
-          const handler = (e: MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-            menu.show(e.clientX, e.clientY);
-          };
-          const eventTarget = findVideoContainer(video);
-          eventTarget.addEventListener('contextmenu', handler, true);
-          this.contextMenuHandlers.set(video, handler);
-          this.contextMenuTargets.set(video, eventTarget);
+          if (this.settings.defaultSpeed !== video.playbackRate) {
+            video.playbackRate = this.settings.defaultSpeed;
+            state.panel.updateSpeedDisplay(this.settings.defaultSpeed);
+          }
+        }
+
+        // 应用右键菜单设置
+        if (!this.settings.showContextMenu && state.contextMenu) {
+          state.contextMenu.hide();
+          if (state.eventHandler) {
+            document.removeEventListener('contextmenu', state.eventHandler, true);
+            this.registry.update(video, { eventHandler: undefined });
+          }
         }
       });
+    } else {
+      // 旧版设置应用逻辑
+      this.panels.forEach((panel, video) => {
+        if (!this.settings.showPanel) {
+          panel.getElement().style.display = 'none';
+        } else {
+          panel.getElement().style.display = '';
+        }
+
+        if (this.settings.defaultSpeed !== video.playbackRate) {
+          video.playbackRate = this.settings.defaultSpeed;
+          panel.updateSpeedDisplay(this.settings.defaultSpeed);
+        }
+      });
+
+      if (!this.settings.showContextMenu) {
+        this.contextMenus.forEach((menu) => menu.hide());
+        this.contextMenuHandlers.forEach((handler) => {
+          document.removeEventListener('contextmenu', handler, true);
+        });
+        this.contextMenuHandlers.clear();
+        this.contextMenuTargets.clear();
+      } else {
+        this.contextMenus.forEach((menu, video) => {
+          if (!this.contextMenuHandlers.has(video)) {
+            const eventTarget = findVideoContainer(video);
+            const handler = (e: MouseEvent) => {
+              const target = e.target as HTMLElement;
+              if (!target || target.closest('.vc-context-menu')) return;
+              if (!eventTarget.contains(target) && !isClickWithinVideo(e, video)) return;
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              menu.show(e.clientX, e.clientY);
+            };
+            document.addEventListener('contextmenu', handler, true);
+            this.contextMenuHandlers.set(video, handler);
+            this.contextMenuTargets.set(video, eventTarget);
+          }
+        });
+      }
     }
   }
 
   getPanel(video: HTMLVideoElement): ControlPanel | undefined {
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      return this.registry.get(video)?.panel;
+    }
     return this.panels.get(video);
   }
 
-  // 切换面板显示状态
   private togglePanel(video: HTMLVideoElement): void {
-    const panel = this.panels.get(video);
+    const panel = this.getPanel(video);
     if (!panel) return;
 
     const element = panel.getElement();
     const isHidden = element.style.display === 'none';
 
     if (isHidden) {
-      // 显示面板，并从关闭列表中移除
       element.style.display = '';
       panel.show();
-      const id = this.getVideoId(video);
-      this.closedPanels.delete(id);
+      if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+        this.registry.markPanelOpened(video);
+      } else {
+        const id = this.getVideoId(video);
+        this.closedPanels.delete(id);
+      }
     } else {
-      // 隐藏面板
       element.style.display = 'none';
       this.markPanelClosed(video);
     }
   }
 
-  // 检查面板是否可见
   private isPanelVisible(video: HTMLVideoElement): boolean {
-    const panel = this.panels.get(video);
+    const panel = this.getPanel(video);
     if (!panel) return false;
     return panel.getElement().style.display !== 'none';
   }
 
   getAllPanels(): ControlPanel[] {
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      const panels: ControlPanel[] = [];
+      this.registry.forEach((_, state) => {
+        if (state?.panel) {
+          panels.push(state.panel);
+        }
+      });
+      return panels;
+    }
     return Array.from(this.panels.values());
   }
 
   getFirstVideo(): HTMLVideoElement | undefined {
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      return this.registry.getFirstVideo();
+    }
     return this.panels.keys().next().value;
   }
 
   toggleAllPanels(): void {
-    this.panels.forEach((panel) => {
-      const element = panel.getElement();
-      element.classList.toggle('vc-visible');
-    });
+    if (FEATURE_FLAGS.USE_VIDEO_REGISTRY) {
+      this.registry.forEach((_, state) => {
+        if (state?.panel) {
+          state.panel.getElement().classList.toggle('vc-visible');
+        }
+      });
+    } else {
+      this.panels.forEach((panel) => {
+        panel.getElement().classList.toggle('vc-visible');
+      });
+    }
   }
 }
 

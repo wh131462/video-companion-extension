@@ -9,12 +9,16 @@
  * 6. CSS 类名模式匹配
  */
 
-// 检测结果接口
-interface DetectionResult {
-  hasCustomControls: boolean;
-  confidence: 'high' | 'medium' | 'low';
-  detectedBy: string;
-}
+import type { DetectionResult, ContainerScore } from '@shared/types';
+import { FEATURE_FLAGS } from '@shared/constants';
+import { ContainerDetector, containerDetector } from './ContainerDetector';
+import { DetectionCache, detectionCache } from './DetectionCache';
+import { PlayerPluginRegistry, playerPluginRegistry } from './PlayerPluginRegistry';
+
+// 导出新组件供外部使用
+export { ContainerDetector, DetectionCache, PlayerPluginRegistry };
+export { containerDetector, detectionCache, playerPluginRegistry };
+export type { ContainerScore };
 
 // 已知网站的自定义控制器选择器（在整个文档中查找）
 const KNOWN_SITE_SELECTORS = [
@@ -44,6 +48,13 @@ const KNOWN_SITE_SELECTORS = [
   // 西瓜视频/抖音
   '.xgplayer-controls',
   '.xg-controls',
+
+  // 保利威 (Polyv)
+  '.pv-video-player',
+  '.pv-controls',
+
+  // 网易云课堂 (study.163.com)
+  '.u-edu-h5player-controlwrap',
 ];
 
 // 通用选择器（在容器内查找）
@@ -73,6 +84,8 @@ const PLAYER_LIBRARY_CLASS_PREFIXES = [
   'video-react', // video-react
   'shaka',       // Shaka Player
   'ckin',        // Clappr
+  'pv-',         // Polyv (保利威)
+  'u-edu-h5player', // 网易云课堂
 ];
 
 // CSS 类名模式匹配
@@ -101,15 +114,53 @@ const CONTROL_KEYWORDS = [
  */
 export function hasCustomControls(video: HTMLVideoElement): boolean {
   try {
-    const container = findVideoContainer(video);
+    // 使用新的缓存系统
+    if (FEATURE_FLAGS.USE_DETECTION_CACHE) {
+      const cached = detectionCache.get(video);
+      if (cached) {
+        return cached.hasCustomControls;
+      }
+    }
+
+    // 使用新的容器检测器
+    const containerScore = FEATURE_FLAGS.USE_WEIGHTED_CONTAINER
+      ? containerDetector.detect(video)
+      : { element: findVideoContainerLegacy(video), score: 0, reasons: [], verified: true };
+
+    const container = containerScore.element;
+
+    // 检查插件系统是否能识别播放器
+    const playerType = playerPluginRegistry.detect(video, container);
+    if (playerType) {
+      const result: DetectionResult = {
+        hasCustomControls: true,
+        confidence: 'high',
+        detectedBy: `plugin:${playerType}`,
+      };
+      if (FEATURE_FLAGS.USE_DETECTION_CACHE) {
+        detectionCache.set(video, result, container);
+      }
+      return true;
+    }
 
     // 1. 首先尝试快速匹配已知选择器
     if (matchKnownSelectors(container)) {
+      const result: DetectionResult = {
+        hasCustomControls: true,
+        confidence: 'high',
+        detectedBy: 'known-selector',
+      };
+      if (FEATURE_FLAGS.USE_DETECTION_CACHE) {
+        detectionCache.set(video, result, container);
+      }
       return true;
     }
 
     // 2. 智能检测
     const result = detectSmartControls(video, container);
+    if (FEATURE_FLAGS.USE_DETECTION_CACHE) {
+      detectionCache.set(video, result, container);
+    }
     return result.hasCustomControls;
   } catch {
     // 检测失败时返回 false，让扩展显示控制面板
@@ -251,10 +302,16 @@ function hasPlayerLibraryMarkers(video: HTMLVideoElement, container: HTMLElement
  */
 function hasControlClassPattern(container: HTMLElement): boolean {
   try {
-    // 检查容器内所有元素的类名
-    const allElements = container.querySelectorAll('*');
+    // 优化：使用精确选择器代替 querySelectorAll('*')
+    const controlElements = container.querySelectorAll([
+      '[class*="control"]',
+      '[class*="player"]',
+      '[class*="bottom"]',
+      '[class*="wrapper"]',
+      '[class*="bar"]',
+    ].join(', '));
 
-    for (const el of allElements) {
+    for (const el of controlElements) {
       const className = getClassName(el);
       if (!className) continue;
 
@@ -388,10 +445,17 @@ function hasControlOverlay(video: HTMLVideoElement, container: HTMLElement): boo
       return false;
     }
 
-    // 获取所有子元素并检查定位
-    const allChildren = container.querySelectorAll('*');
+    // 优化：只查询可能是覆盖层的元素（有定位相关类名或包含控制元素）
+    const potentialOverlays = container.querySelectorAll([
+      '[class*="overlay"]',
+      '[class*="control"]',
+      '[class*="bottom"]',
+      '[class*="bar"]',
+      'div > button',
+      'div > [role="button"]',
+    ].join(', '));
 
-    for (const child of allChildren) {
+    for (const child of potentialOverlays) {
       const el = child as HTMLElement;
       const style = window.getComputedStyle(el);
 
@@ -460,30 +524,50 @@ function isSvgVisible(el: SVGSVGElement): boolean {
 }
 
 /**
- * 查找视频容器
+ * 查找视频容器（使用新系统）
  */
 export function findVideoContainer(video: HTMLVideoElement): HTMLElement {
+  if (FEATURE_FLAGS.USE_WEIGHTED_CONTAINER) {
+    return containerDetector.detect(video).element;
+  }
+  return findVideoContainerLegacy(video);
+}
+
+/**
+ * 查找视频容器（旧版实现，保留作为兼容）
+ */
+function findVideoContainerLegacy(video: HTMLVideoElement): HTMLElement {
   try {
-    // 向上查找最多 5 层父元素
+    // 向上查找最多 5 层父元素，优先选择 "player" 容器
     let current: HTMLElement | null = video.parentElement;
     let depth = 0;
+    let videoMatch: HTMLElement | null = null;
 
     while (current && depth < 5) {
       // 检查是否是播放器容器
       const className = getClassName(current).toLowerCase();
       const id = (current.id || '').toLowerCase();
 
-      if (
-        className.includes('player') ||
-        className.includes('video') ||
-        id.includes('player') ||
-        id.includes('video')
-      ) {
+      const isPlayerMatch = className.includes('player') || id.includes('player');
+      const isVideoMatch = className.includes('video') || id.includes('video');
+
+      if (isPlayerMatch) {
+        // "player" 是最优匹配，直接返回
         return current;
+      }
+
+      if (isVideoMatch && !videoMatch) {
+        // 记录第一个 "video" 匹配，但继续向上查找可能的 "player" 容器
+        videoMatch = current;
       }
 
       current = current.parentElement;
       depth++;
+    }
+
+    // 如果找到了 "video" 匹配但没找到 "player" 匹配，使用 "video" 匹配
+    if (videoMatch) {
+      return videoMatch;
     }
 
     // 返回最近的 5 层祖先或 body

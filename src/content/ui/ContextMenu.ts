@@ -90,6 +90,14 @@ export class ContextMenu {
       items.push({ divider: true });
     }
 
+    // 播放/暂停
+    items.push({
+      label: this.video.paused ? '播放' : '暂停',
+      icon: this.video.paused ? Icons.play : Icons.pause,
+      onClick: () => this.handlePlayPause(),
+    });
+    items.push({ divider: true });
+
     items.push(
       {
         label: `倍速: ${formatSpeed(currentSpeed)}`,
@@ -355,6 +363,16 @@ export class ContextMenu {
   private handleMute(): void {
     const isMuted = mute.toggle(this.video);
     showToast(isMuted ? '已静音' : '已取消静音');
+  }
+
+  private handlePlayPause(): void {
+    if (this.video.paused) {
+      this.video.play();
+      showToast('播放');
+    } else {
+      this.video.pause();
+      showToast('暂停');
+    }
   }
 
   destroy(): void {

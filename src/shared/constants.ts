@@ -76,3 +76,21 @@ export const Z_INDEX = {
   panel: 2147483647,
   webFullscreen: 2147483646,
 };
+
+// 检测缓存配置
+export const DETECTION_CACHE_TTL = 5000; // 5秒过期
+
+// 容器检测配置
+export const CONTAINER_MAX_DEPTH = 8; // 最大向上查找深度（需要足够深以包含嵌套播放器）
+
+// 视频就绪检测配置
+export const VIDEO_READY_MAX_ATTEMPTS = 5;
+export const VIDEO_READY_BASE_DELAY = 100;
+
+// 特性开关
+export const FEATURE_FLAGS = {
+  USE_VIDEO_REGISTRY: true,
+  USE_LIFECYCLE_MANAGER: true,
+  USE_DETECTION_CACHE: true,
+  USE_WEIGHTED_CONTAINER: true,
+} as const;

@@ -82,3 +82,54 @@ export interface StorageData {
   settings: UserSettings;
   stats: Stats;
 }
+
+// ============ 视频检测系统类型 ============
+
+// 容器评分结果
+export interface ContainerScore {
+  element: HTMLElement;
+  score: number;
+  reasons: string[];
+  verified: boolean;
+}
+
+// 容器检测规则
+export interface ContainerRule {
+  name: string;
+  weight: number;
+  test: (element: HTMLElement, video: HTMLVideoElement) => boolean;
+}
+
+// 检测结果
+export interface DetectionResult {
+  hasCustomControls: boolean;
+  confidence: 'high' | 'medium' | 'low';
+  detectedBy: string;
+}
+
+// 视频生命周期事件
+export interface VideoLifecycleEvents {
+  onVideoAdded: (video: HTMLVideoElement) => void;
+  onVideoRemoved: (video: HTMLVideoElement) => void;
+  onVideoReplaced?: (
+    oldVideo: HTMLVideoElement,
+    newVideo: HTMLVideoElement,
+    container: HTMLElement
+  ) => void;
+  onVideoResized?: (video: HTMLVideoElement) => void;
+}
+
+// 播放器插件
+export interface PlayerPlugin {
+  name: string;
+  priority: number;
+  detect: (video: HTMLVideoElement, container: HTMLElement) => boolean;
+  getContainer?: (video: HTMLVideoElement) => HTMLElement | null;
+}
+
+// 缓存条目
+export interface CacheEntry<T> {
+  result: T;
+  timestamp: number;
+  containerSnapshot: string;
+}
