@@ -48,3 +48,4 @@ coverage/
 # Website (auto-generated in CI)
 website/snapshots/
 website/assets/images/favicon-*
+website/version.json

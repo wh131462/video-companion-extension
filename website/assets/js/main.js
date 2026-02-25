@@ -4,6 +4,9 @@
 
 // Initialize AOS (Animate On Scroll)
 document.addEventListener('DOMContentLoaded', function() {
+    // 动态加载版本号
+    loadVersion();
+
     // Initialize AOS
     if (typeof AOS !== 'undefined') {
         AOS.init({
@@ -129,3 +132,20 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('scroll', highlightNavLink);
     highlightNavLink(); // Initial call
 });
+
+/**
+ * 从 version.json 动态加载版本号并填充到页面
+ */
+function loadVersion() {
+    fetch('./version.json')
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            var versionText = 'v' + data.version;
+            document.querySelectorAll('[data-version]').forEach(function(el) {
+                el.textContent = versionText;
+            });
+        })
+        .catch(function() {
+            // 加载失败时不显示版本号
+        });
+}
