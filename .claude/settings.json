@@ -7,7 +7,9 @@
       "Bash(git stash pop)",
       "Bash(while read ref)",
       "Bash(do git update-ref -d \"$ref\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(export PATH=\"/usr/local/bin:/opt/homebrew/bin:$HOME/.nvm/versions/node/*/bin:$PATH\")",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH\")"
     ],
     "additionalDirectories": [
       "/Users/eternalheart/workspace/wh131462/video-companion-extension"

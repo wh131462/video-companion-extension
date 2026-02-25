@@ -447,6 +447,19 @@ export class VideoEnhancer {
             document.removeEventListener('contextmenu', state.eventHandler, true);
             this.registry.update(video, { eventHandler: undefined });
           }
+        } else if (this.settings.showContextMenu && state.contextMenu && !state.eventHandler) {
+          const ctxContainer = state.container;
+          const ctxMenu = state.contextMenu;
+          const handler = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            if (!target || target.closest('.vc-context-menu')) return;
+            if (!ctxContainer.contains(target) && !isClickWithinVideo(e, video)) return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            ctxMenu.show(e.clientX, e.clientY);
+          };
+          document.addEventListener('contextmenu', handler, true);
+          this.registry.update(video, { eventHandler: handler });
         }
       });
     } else {

@@ -17,9 +17,6 @@ const panelToggle = document.getElementById('panel-toggle') as HTMLInputElement;
 const contextMenuToggle = document.getElementById('context-menu-toggle') as HTMLInputElement;
 const videoInfo = document.getElementById('video-info') as HTMLDivElement;
 const videoCount = document.getElementById('video-count') as HTMLSpanElement;
-const pipBtn = document.getElementById('pip-btn') as HTMLButtonElement;
-const screenshotBtn = document.getElementById('screenshot-btn') as HTMLButtonElement;
-const fullscreenBtn = document.getElementById('fullscreen-btn') as HTMLButtonElement;
 
 // 初始化
 async function init(): Promise<void> {
@@ -28,7 +25,7 @@ async function init(): Promise<void> {
   versionEl.textContent = `v${manifest.version}`;
 
   // 获取当前设置
-  const { settings } = await chrome.storage.sync.get('settings');
+  const { settings } = await chrome.storage.local.get('settings');
   const showPanel = settings?.showPanel ?? true;
   const showContextMenu = settings?.showContextMenu ?? true;
 
@@ -70,8 +67,8 @@ async function updateVideoCount(): Promise<void> {
 // 保存设置并广播
 async function saveAndBroadcast(key: string, value: boolean): Promise<void> {
   // 更新存储
-  const { settings = {} } = await chrome.storage.sync.get('settings');
-  await chrome.storage.sync.set({
+  const { settings = {} } = await chrome.storage.local.get('settings');
+  await chrome.storage.local.set({
     settings: { ...settings, [key]: value },
   });
 
@@ -91,18 +88,6 @@ async function saveAndBroadcast(key: string, value: boolean): Promise<void> {
   }
 }
 
-// 发送操作到当前标签页
-async function sendAction(action: string): Promise<void> {
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (tab?.id) {
-      await chrome.tabs.sendMessage(tab.id, { action });
-    }
-  } catch (error) {
-    console.error('Video Companion: 操作失败', error);
-  }
-}
-
 // 事件监听
 
 // 控制面板开关
@@ -114,11 +99,6 @@ panelToggle.addEventListener('change', async () => {
 contextMenuToggle.addEventListener('change', async () => {
   await saveAndBroadcast('showContextMenu', contextMenuToggle.checked);
 });
-
-// 快捷操作按钮
-pipBtn.addEventListener('click', () => sendAction('togglePiP'));
-screenshotBtn.addEventListener('click', () => sendAction('screenshot'));
-fullscreenBtn.addEventListener('click', () => sendAction('toggleFullscreen'));
 
 // 初始化
 init();
