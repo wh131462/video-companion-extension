@@ -1,5 +1,14 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(git filter-branch --env-filter ':*)",
+      "Bash(git stash)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git filter-branch --env-filter ':*)",
+      "Bash(git stash pop)",
+      "Bash(while read ref)",
+      "Bash(do git update-ref -d \"$ref\")",
+      "Bash(done)"
+    ],
     "additionalDirectories": [
       "/Users/eternalheart/workspace/wh131462/video-companion-extension"
     ]

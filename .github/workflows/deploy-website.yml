@@ -9,6 +9,7 @@ on:
     paths:
       - 'website/**'
       - 'docs/snapshots/**'
+      - 'manifest.json'
       - '.github/workflows/deploy-website.yml'
 
   # 允许手动触发
@@ -47,6 +48,9 @@ jobs:
           cp public/icons/icon128.png website/assets/images/favicon-128.png
           cp public/icons/icon48.png website/assets/images/favicon-48.png
           cp public/icons/icon16.png website/assets/images/favicon-16.png
+
+          # 从 manifest.json 生成 version.json
+          node scripts/sync-website-version.mjs
 
           # 显示文件结构
           echo "Website files:"
