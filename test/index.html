@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Companion - Test Page</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 24px; font-size: 24px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(560px, 1fr)); gap: 20px; }
+    .card { background: #16213e; border-radius: 8px; overflow: hidden; }
+    .card-header { padding: 10px 14px; font-size: 13px; color: #aaa; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-header a { color: #7ec8e3; text-decoration: none; }
+    .card-header a:hover { text-decoration: underline; }
+    .card-body { position: relative; width: 100%; padding-top: 56.25%; }
+    .card-body iframe,
+    .card-body video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+  <h1>Video Companion - Test Page</h1>
+  <div class="grid">
+
+    <!-- Video.js -->
+    <div class="card">
+      <div class="card-header"><a href="https://videojs.org/city" target="_blank">Video.js - City</a></div>
+      <div class="card-body">
+        <iframe src="https://videojs.org/city" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- Video React -->
+    <div class="card">
+      <div class="card-header"><a href="https://video-react.js.org/" target="_blank">Video React</a></div>
+      <div class="card-body">
+        <iframe src="https://video-react.js.org/" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- YouTube -->
+    <div class="card">
+      <div class="card-header"><a href="https://www.youtube.com/watch?v=ncL11NbQ_NI" target="_blank">YouTube Video</a></div>
+      <div class="card-body">
+        <iframe src="https://www.youtube.com/embed/ncL11NbQ_NI" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- Bilibili -->
+    <div class="card">
+      <div class="card-header"><a href="https://www.bilibili.com/video/BV1iU6bBCE5h" target="_blank">Bilibili Video</a></div>
+      <div class="card-body">
+        <iframe src="https://player.bilibili.com/player.html?bvid=BV1iU6bBCE5h&amp;autoplay=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- GitHub Blog -->
+    <div class="card">
+      <div class="card-header"><a href="https://github.blog/open-source/gaming/light-waves-rising-tides-and-drifting-ships-game-off-2025-winners/#2-where-the-water-flows" target="_blank">GitHub Blog - Game Off 2025</a></div>
+      <div class="card-body">
+        <iframe src="https://github.blog/open-source/gaming/light-waves-rising-tides-and-drifting-ships-game-off-2025-winners/#2-where-the-water-flows" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- 网易公开课 -->
+    <div class="card">
+      <div class="card-header"><a href="https://study.163.com/course/courseLearn.htm?courseId=1209399946#/learn/video?lessonId=1279355441&amp;courseId=1209399946" target="_blank">网易公开课</a></div>
+      <div class="card-body">
+        <iframe src="https://study.163.com/course/courseLearn.htm?courseId=1209399946#/learn/video?lessonId=1279355441&amp;courseId=1209399946" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- 国家开放大学 -->
+    <div class="card">
+      <div class="card-header"><a href="https://le.ouchn.cn/courseDetails/01c19fe2-326c-11ee-bd5f-fa163ea9b0ea" target="_blank">国家开放大学</a></div>
+      <div class="card-body">
+        <iframe src="https://le.ouchn.cn/courseDetails/01c19fe2-326c-11ee-bd5f-fa163ea9b0ea" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+
+    <!-- HLS 测试流 -->
+    <div class="card">
+      <div class="card-header"><a href="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" target="_blank">HLS Test Stream (Mux)</a></div>
+      <div class="card-body">
+        <video controls>
+          <source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL">
+        </video>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
