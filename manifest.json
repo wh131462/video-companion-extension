@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Video Companion",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "增强网页视频播放体验 - 画中画、全屏、倍速控制等",
   "minimum_chrome_version": "122",
   "permissions": [
@@ -34,9 +34,21 @@
         "<all_urls>"
       ],
       "js": [
+        "src/content/hls/m3u8-interceptor-main.ts"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
         "src/content/index.ts"
       ],
-      "run_at": "document_end"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ],
   "web_accessible_resources": [

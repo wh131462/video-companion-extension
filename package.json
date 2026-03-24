@@ -4,7 +4,7 @@
   "description": "增强网页视频播放体验 - 画中画、全屏、倍速控制等",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 9696",
     "build": "tsc && vite build",
     "build:zip": "npm run build && cd dist && zip -r ../video-companion-extension.zip . && cd ..",
     "preview": "vite preview",
@@ -39,5 +39,9 @@
     "name": "EternalHeart",
     "url": "https://github.com/wh131462"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "hls.js": "^1.6.15",
+    "mux.js": "^6.3.0"
+  }
 }
