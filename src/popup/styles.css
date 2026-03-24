@@ -163,7 +163,7 @@ body {
   transform: translateX(20px);
 }
 
-/* 视频信息 */
+/* 视频信息 + 播放器入口 */
 .video-info {
   display: flex;
   align-items: center;
@@ -175,6 +175,13 @@ body {
   margin-bottom: 12px;
   font-size: 13px;
   color: #a5b4fc;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.video-info:hover {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.35);
 }
 
 .video-info.no-video {
@@ -183,10 +190,42 @@ body {
   color: #71717a;
 }
 
+.video-info.no-video:hover {
+  background: rgba(113, 113, 122, 0.18);
+  border-color: rgba(113, 113, 122, 0.3);
+}
+
 .info-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+.info-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.info-hint {
+  font-size: 11px;
+  color: #71717a;
+}
+
+.info-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #71717a;
+  transition: transform 0.2s ease;
+}
+
+.video-info:hover .info-arrow {
+  transform: translateX(2px);
 }
 
 /* 底部 */

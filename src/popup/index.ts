@@ -50,17 +50,33 @@ async function updateVideoCount(): Promise<void> {
     // 向 content script 发送消息获取视频数量
     const response = await chrome.tabs.sendMessage(tab.id, { action: 'getVideoCount' });
     const count = response?.count ?? 0;
+    const m3u8Count = (response?.data as { m3u8Count?: number })?.m3u8Count ?? 0;
 
-    if (count === 0) {
+    if (count === 0 && m3u8Count === 0) {
       videoCount.textContent = '当前页面没有视频';
       videoInfo.classList.add('no-video');
     } else {
-      videoCount.textContent = `检测到 ${count} 个视频`;
+      const parts: string[] = [];
+      if (count > 0) parts.push(`${count} 个视频`);
+      if (m3u8Count > 0) parts.push(`${m3u8Count} 个流媒体`);
+      videoCount.textContent = `检测到 ${parts.join('、')}`;
       videoInfo.classList.remove('no-video');
     }
   } catch {
     videoCount.textContent = '当前页面没有视频';
     videoInfo.classList.add('no-video');
+  }
+}
+
+// 打开视频播放器
+async function openVideoPlayer(): Promise<void> {
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id) return;
+    await chrome.tabs.sendMessage(tab.id, { action: 'openVideoPlayer' });
+    window.close();
+  } catch {
+    // 页面无法通信时忽略
   }
 }
 
@@ -98,6 +114,11 @@ panelToggle.addEventListener('change', async () => {
 // 右键菜单开关
 contextMenuToggle.addEventListener('change', async () => {
   await saveAndBroadcast('showContextMenu', contextMenuToggle.checked);
+});
+
+// 视频信息区域 → 打开播放器
+videoInfo.addEventListener('click', () => {
+  openVideoPlayer();
 });
 
 // 初始化
