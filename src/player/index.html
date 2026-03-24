@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HLS Player - Video Companion</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a14;
+      color: #e4e4e7;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    h1 { font-size: 24px; margin-bottom: 20px; font-weight: 600; }
+    .input-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      max-width: 720px;
+      margin-bottom: 24px;
+    }
+    input {
+      flex: 1;
+      height: 44px;
+      padding: 0 16px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      outline: none;
+    }
+    input:focus { border-color: #6366f1; }
+    input::placeholder { color: #71717a; }
+    button {
+      height: 44px;
+      padding: 0 24px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { opacity: 0.9; }
+    video {
+      width: 100%;
+      max-width: 960px;
+      max-height: 70vh;
+      background: #000;
+      border-radius: 8px;
+    }
+    .error {
+      color: #ef4444;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>HLS Player</h1>
+  <div class="input-row">
+    <input type="text" id="urlInput" placeholder="输入 m3u8 URL..." />
+    <button id="playBtn">播放</button>
+  </div>
+  <video id="player" controls></video>
+  <div id="error" class="error"></div>
+  <script type="module" src="index.ts"></script>
+</body>
+</html>
