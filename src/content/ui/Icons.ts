@@ -115,6 +115,20 @@ export const Icons = {
     <line x1="18" y1="6" x2="6" y2="18"/>
     <line x1="6" y1="6" x2="18" y2="18"/>
   </svg>`,
+
+  // HLS/m3u8 图标
+  hls: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M2 16V8l4 4-4 4z"/>
+    <path d="M22 16V8l-4 4 4 4z"/>
+    <rect x="7" y="4" width="10" height="16" rx="2" fill="currentColor" opacity="0.15"/>
+    <path d="M10 9h4M10 12h4M10 15h4"/>
+  </svg>`,
+
+  // 重试图标
+  retry: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="23 4 23 10 17 10"/>
+    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+  </svg>`,
 } as const;
 
 export type IconName = keyof typeof Icons;

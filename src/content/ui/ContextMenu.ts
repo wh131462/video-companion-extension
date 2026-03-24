@@ -15,7 +15,11 @@ import {
   download,
   loop,
   mute,
+  hideControls,
 } from '../features';
+import { m3u8SourceCollector } from '../hls/M3u8SourceCollector';
+import { hlsPlayerUI } from '../hls/HlsPlayerUI';
+import { hlsContentDownloader } from '../hls/HlsContentDownloader';
 
 interface MenuItem {
   label?: string;
@@ -90,6 +94,15 @@ export class ContextMenu {
       items.push({ divider: true });
     }
 
+    // 隐藏/显示原生控制器
+    items.push({
+      label: this.video.controls ? '隐藏控制器' : '显示控制器',
+      icon: this.video.controls ? Icons.showControls : Icons.hideControls,
+      checked: !this.video.controls,
+      onClick: () => this.handleHideControls(),
+    });
+    items.push({ divider: true });
+
     // 播放/暂停
     items.push({
       label: this.video.paused ? '播放' : '暂停',
@@ -142,11 +155,35 @@ export class ContextMenu {
         label: '截图',
         icon: Icons.screenshot,
         onClick: () => this.handleScreenshot(),
-      },
-      {
+      }
+    );
+
+    // 下载（自动判断：有 m3u8 源走 HLS 下载，否则普通下载）
+    const m3u8Sources = m3u8SourceCollector.getSources();
+    if (m3u8Sources.length > 1) {
+      items.push({
+        label: '下载视频',
+        icon: Icons.download,
+        submenu: m3u8Sources.map((source) => ({
+          label: this.truncateUrl(source.url, 40),
+          onClick: () => this.handleM3u8Download(source.url),
+        })),
+      });
+    } else {
+      items.push({
         label: '下载视频',
         icon: Icons.download,
         onClick: () => this.handleDownload(),
+      });
+    }
+
+    // HLS 播放器入口
+    items.push(
+      { divider: true },
+      {
+        label: '通过链接播放',
+        icon: Icons.hls,
+        onClick: () => this.handlePlayM3u8(),
       }
     );
 
@@ -339,6 +376,13 @@ export class ContextMenu {
 
   private handleDownload(): void {
     try {
+      // 优先使用 HLS 下载
+      if (m3u8SourceCollector.hasSources()) {
+        const sources = m3u8SourceCollector.getSources();
+        hlsContentDownloader.download(sources[0]!.url);
+        return;
+      }
+
       download.download(this.video);
       showToast('开始下载视频');
     } catch (error) {
@@ -365,6 +409,11 @@ export class ContextMenu {
     showToast(isMuted ? '已静音' : '已取消静音');
   }
 
+  private handleHideControls(): void {
+    const isHidden = hideControls.toggle(this.video);
+    showToast(isHidden ? '已隐藏原生控制器' : '已显示原生控制器');
+  }
+
   private handlePlayPause(): void {
     if (this.video.paused) {
       this.video.play();
@@ -373,6 +422,19 @@ export class ContextMenu {
       this.video.pause();
       showToast('暂停');
     }
+  }
+
+  private handleM3u8Download(url: string): void {
+    hlsContentDownloader.download(url);
+  }
+
+  private handlePlayM3u8(): void {
+    hlsPlayerUI.show();
+  }
+
+  private truncateUrl(url: string, maxLen: number): string {
+    if (url.length <= maxLen) return url;
+    return url.slice(0, maxLen - 3) + '...';
   }
 
   destroy(): void {

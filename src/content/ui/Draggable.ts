@@ -1,9 +1,13 @@
 /**
  * 拖拽功能
+ * 增量回调模式：不直接操作元素 style，只通过回调通知拖拽增量
  */
 
 export interface DraggableOptions {
   excludeSelector?: string;
+  onDragStart?: () => void;
+  onDragMove?: (deltaX: number, deltaY: number) => void;
+  onDragEnd?: () => void;
 }
 
 const DRAGGING_CLASS = 'vc-dragging';
@@ -12,10 +16,8 @@ export class Draggable {
   private element: HTMLElement;
   private options: DraggableOptions;
   private isDragging = false;
-  private offsetX = 0;
-  private offsetY = 0;
-  private parentOffsetX = 0;
-  private parentOffsetY = 0;
+  private startX = 0;
+  private startY = 0;
 
   private boundMouseMove: (e: MouseEvent) => void;
   private boundMouseUp: () => void;
@@ -48,18 +50,12 @@ export class Draggable {
     // 添加拖拽状态类（禁用 transition）
     this.element.classList.add(DRAGGING_CLASS);
 
-    // 计算鼠标相对于元素的偏移
-    const rect = this.element.getBoundingClientRect();
-    this.offsetX = e.clientX - rect.left;
-    this.offsetY = e.clientY - rect.top;
-
-    // 缓存父元素偏移（只计算一次）
-    const parent = this.element.offsetParent as HTMLElement;
-    const parentRect = parent ? parent.getBoundingClientRect() : { left: 0, top: 0 };
-    this.parentOffsetX = parentRect.left;
-    this.parentOffsetY = parentRect.top;
+    // 记录拖拽起始鼠标坐标
+    this.startX = e.clientX;
+    this.startY = e.clientY;
 
     this.element.style.cursor = 'grabbing';
+    this.options.onDragStart?.();
 
     document.addEventListener('mousemove', this.boundMouseMove);
     document.addEventListener('mouseup', this.boundMouseUp);
@@ -70,16 +66,10 @@ export class Draggable {
 
     e.preventDefault();
 
-    // 计算新的 left/top（相对于定位父元素）
-    const newLeft = e.clientX - this.parentOffsetX - this.offsetX;
-    const newTop = e.clientY - this.parentOffsetY - this.offsetY;
-
-    // 清除 transform 以便使用 left/top 定位
-    this.element.style.transform = 'none';
-    this.element.style.left = `${newLeft}px`;
-    this.element.style.top = `${newTop}px`;
-    this.element.style.right = 'auto';
-    this.element.style.bottom = 'auto';
+    // 只通知增量，不直接操作 style
+    const deltaX = e.clientX - this.startX;
+    const deltaY = e.clientY - this.startY;
+    this.options.onDragMove?.(deltaX, deltaY);
   }
 
   private handleMouseUp(): void {
@@ -89,6 +79,8 @@ export class Draggable {
 
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
+
+    this.options.onDragEnd?.();
   }
 
   destroy(): void {

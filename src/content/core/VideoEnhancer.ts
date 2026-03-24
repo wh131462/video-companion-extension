@@ -295,12 +295,6 @@ export class VideoEnhancer {
         onClose: () => this.markPanelClosed(video),
       });
 
-      // 添加到视频父元素
-      if (video.parentElement) {
-        video.parentElement.style.position = 'relative';
-        video.parentElement.appendChild(panel.getElement());
-      }
-
       // 检查是否被用户手动关闭过
       if (state.isPanelClosed) {
         panel.getElement().style.display = 'none';
@@ -380,11 +374,6 @@ export class VideoEnhancer {
       });
 
       this.panels.set(video, panel);
-
-      if (video.parentElement) {
-        video.parentElement.style.position = 'relative';
-        video.parentElement.appendChild(panel.getElement());
-      }
 
       if (this.isPanelClosed(video)) {
         panel.getElement().style.display = 'none';

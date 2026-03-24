@@ -19,17 +19,15 @@
   --vc-radius-sm: 8px;
 }
 
-/* 控制面板容器 - 底部居中 */
+/* 控制面板容器 - fixed 定位，由 JS 动态计算位置 */
 .vc-control-panel {
-  position: absolute;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
+  position: fixed;
   z-index: 2147483647;
   background: var(--vc-bg);
   border-radius: var(--vc-radius);
   padding: 14px 12px 8px;
   opacity: 0;
+  transform: translateY(20px);
   transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: move;
@@ -71,7 +69,7 @@
 
 .vc-control-panel.vc-visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: none;
 }
 
 /* 关闭按钮 - 右上角 */
@@ -879,3 +877,4 @@
 .vc-submenu .vc-menu-item {
   padding: 6px 16px;
 }
+

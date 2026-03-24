@@ -19,6 +19,9 @@ import {
   mute,
   hideControls,
 } from '../features';
+import { m3u8SourceCollector } from '../hls/M3u8SourceCollector';
+import { hlsPlayerUI } from '../hls/HlsPlayerUI';
+import { hlsContentDownloader } from '../hls/HlsContentDownloader';
 
 export interface ControlPanelOptions {
   video: HTMLVideoElement;
@@ -41,6 +44,7 @@ export class ControlPanel {
   private speedButton: HTMLButtonElement | null = null;
   private loopButton: HTMLButtonElement | null = null;
   private muteButton: HTMLButtonElement | null = null;
+  private downloadButton: HTMLButtonElement | null = null;
   private hideControlsButton: HTMLButtonElement | null = null;
   private draggable: Draggable;
   private hideTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -61,6 +65,14 @@ export class ControlPanel {
   private isDraggingProgress = false;
   private isControlsHidden = false;
 
+  // 定位跟随相关
+  private dragOffsetX = 0;
+  private dragOffsetY = 0;
+  private dragStartOffsetX = 0;
+  private dragStartOffsetY = 0;
+  private positionRAF: number | null = null;
+  private downloadUnsubscribe: (() => void) | null = null;
+
   constructor(options: ControlPanelOptions) {
     this.video = options.video;
     this.autoHide = options.autoHide ?? true;
@@ -73,11 +85,25 @@ export class ControlPanel {
     });
 
     this.element = this.create();
+
+    // 面板始终挂载到 body，使用 fixed 定位跟随 video
+    this.element.style.position = 'fixed';
+    document.body.appendChild(this.element);
+
     this.draggable = new Draggable(this.element, {
       excludeSelector: `.${CSS_CLASSES.speedMenu}, .vc-progress-bar, .vc-volume-slider, .vc-volume-icon`,
+      onDragStart: () => {
+        this.dragStartOffsetX = this.dragOffsetX;
+        this.dragStartOffsetY = this.dragOffsetY;
+      },
+      onDragMove: (deltaX, deltaY) => {
+        this.dragOffsetX = this.dragStartOffsetX + deltaX;
+        this.dragOffsetY = this.dragStartOffsetY + deltaY;
+      },
     });
 
     this.setupEventListeners();
+    this.startPositionTracking();
   }
 
   private create(): HTMLDivElement {
@@ -166,13 +192,21 @@ export class ControlPanel {
     }));
 
     // 8. 下载按钮
-    buttonContainer.appendChild(this.createButton({
+    this.downloadButton = this.createButton({
       icon: Icons.download,
       title: '下载',
       onClick: () => this.handleDownload(),
+    });
+    buttonContainer.appendChild(this.downloadButton);
+
+    // 9. HLS 按钮
+    buttonContainer.appendChild(this.createButton({
+      icon: Icons.hls,
+      title: 'HLS',
+      onClick: () => this.handleHls(),
     }));
 
-    // 9. 隐藏原生控制器按钮
+    // 10. 隐藏原生控制器按钮
     this.hideControlsButton = this.createButton({
       icon: this.video.controls ? Icons.showControls : Icons.hideControls,
       title: '隐藏控制器',
@@ -525,11 +559,58 @@ export class ControlPanel {
 
   private handleDownload(): void {
     try {
+      // 优先使用 HLS 下载（有 m3u8 源说明页面使用 HLS 流媒体）
+      if (m3u8SourceCollector.hasSources()) {
+        const sources = m3u8SourceCollector.getSources();
+        this.handleM3u8Download(sources[0]!.url);
+        return;
+      }
+
       download.download(this.video);
       showToast('开始下载视频');
     } catch (error) {
       showToast(error instanceof Error ? error.message : '下载失败');
     }
+  }
+
+  private handleM3u8Download(m3u8Url: string): void {
+    // 清除之前的监听
+    this.downloadUnsubscribe?.();
+    this.downloadUnsubscribe = hlsContentDownloader.onStateChange((state) => {
+      if (!this.downloadButton) return;
+      const tooltip = this.downloadButton.querySelector(`.${CSS_CLASSES.tooltip}`);
+      switch (state.status) {
+        case 'downloading':
+          this.downloadButton.innerHTML = `<span style="font-size:11px;position:relative;z-index:1">${state.percent}%</span>`;
+          if (tooltip) this.downloadButton.appendChild(tooltip);
+          break;
+        case 'error':
+          this.downloadButton.innerHTML = Icons.retry;
+          if (tooltip) this.downloadButton.appendChild(tooltip);
+          // 重写点击行为为重试
+          this.downloadButton.onclick = (e) => {
+            e.stopPropagation();
+            this.handleM3u8Download(m3u8Url);
+          };
+          break;
+        case 'done':
+          this.downloadButton.innerHTML = Icons.download;
+          if (tooltip) this.downloadButton.appendChild(tooltip);
+          // 恢复原始点击行为
+          this.downloadButton.onclick = (e) => {
+            e.stopPropagation();
+            this.handleDownload();
+          };
+          this.downloadUnsubscribe?.();
+          this.downloadUnsubscribe = null;
+          break;
+      }
+    });
+    hlsContentDownloader.download(m3u8Url);
+  }
+
+  private handleHls(): void {
+    hlsPlayerUI.show();
   }
 
   private handleScreenshot(): void {
@@ -627,7 +708,56 @@ export class ControlPanel {
 
   destroy(): void {
     this.cancelHide();
+    this.stopPositionTracking();
+    this.downloadUnsubscribe?.();
     this.draggable.destroy();
     this.element.remove();
+  }
+
+  // === 定位跟随方法 ===
+
+  private startPositionTracking(): void {
+    this.updatePosition();
+    const tick = () => {
+      this.updatePosition();
+      this.positionRAF = requestAnimationFrame(tick);
+    };
+    this.positionRAF = requestAnimationFrame(tick);
+  }
+
+  private stopPositionTracking(): void {
+    if (this.positionRAF !== null) {
+      cancelAnimationFrame(this.positionRAF);
+      this.positionRAF = null;
+    }
+  }
+
+  private updatePosition(): void {
+    const rect = this.video.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // 离屏检测：视频完全不在视口内，或尺寸为 0
+    if (rect.width === 0 || rect.height === 0 ||
+        rect.bottom <= 0 || rect.top >= vh ||
+        rect.right <= 0 || rect.left >= vw) {
+      this.element.style.visibility = 'hidden';
+      return;
+    }
+    this.element.style.visibility = '';
+
+    const panelWidth = this.element.offsetWidth;
+    const panelHeight = this.element.offsetHeight;
+
+    // 基准位置：视频底部居中，上移 16px
+    let left = rect.left + (rect.width - panelWidth) / 2;
+    let top = rect.bottom - panelHeight - 16;
+
+    // 叠加拖拽偏移
+    left += this.dragOffsetX;
+    top += this.dragOffsetY;
+
+    this.element.style.left = `${left}px`;
+    this.element.style.top = `${top}px`;
   }
 }
