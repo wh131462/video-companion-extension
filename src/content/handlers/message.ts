@@ -9,6 +9,8 @@ import { videoEnhancer } from '../core/VideoEnhancer';
 import { extensionController } from '../core/ExtensionController';
 import { showToast } from '../ui/Toast';
 import { pictureInPicture, fullscreen, playbackSpeed } from '../features';
+import { hlsPlayerUI } from '../hls/HlsPlayerUI';
+import { m3u8SourceCollector } from '../hls/M3u8SourceCollector';
 
 export function setupMessageHandler(): void {
   chrome.runtime.onMessage.addListener(
@@ -99,8 +101,13 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
 
     case 'getVideoCount': {
       const videos = document.querySelectorAll('video');
-      return { success: true, count: videos.length };
+      const m3u8Count = m3u8SourceCollector.getSources().length;
+      return { success: true, count: videos.length, data: { m3u8Count } };
     }
+
+    case 'openVideoPlayer':
+      hlsPlayerUI.show();
+      return { success: true };
 
     default:
       return { success: false, error: 'Unknown action' };
