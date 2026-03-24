@@ -87,6 +87,10 @@ export const CONTAINER_MAX_DEPTH = 8; // 最大向上查找深度（需要足够
 export const VIDEO_READY_MAX_ATTEMPTS = 5;
 export const VIDEO_READY_BASE_DELAY = 100;
 
+// HLS 下载配置
+export const HLS_DOWNLOAD_CONCURRENCY = 5;
+export const HLS_SEGMENT_TIMEOUT = 30000;
+
 // 特性开关
 export const FEATURE_FLAGS = {
   USE_VIDEO_REGISTRY: true,

@@ -23,6 +23,14 @@ export interface Stats {
   videosEnhanced: number;
 }
 
+// m3u8 源信息
+export interface M3u8Source {
+  url: string;
+  pageUrl: string;
+  timestamp: number;
+  fromIntercept: boolean;
+}
+
 // 消息类型
 export type MessageAction =
   | 'getSettings'
@@ -39,7 +47,8 @@ export type MessageAction =
   | 'settingsChanged'
   | 'extensionEnabled'
   | 'extensionDisabled'
-  | 'getVideoCount';
+  | 'getVideoCount'
+  | 'openVideoPlayer';
 
 // 消息接口
 export interface Message {

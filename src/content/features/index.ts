@@ -10,6 +10,7 @@ export { download, DownloadFeature } from './Download';
 export { loop, LoopFeature } from './Loop';
 export { mute, MuteFeature } from './Mute';
 export { hideControls, HideControlsFeature } from './HideControls';
+export { hlsPlayer, HlsPlayerFeature } from './HlsPlayer';
 
 // 功能实例集合
 import { pictureInPicture } from './PictureInPicture';
@@ -20,6 +21,7 @@ import { download } from './Download';
 import { loop } from './Loop';
 import { mute } from './Mute';
 import { hideControls } from './HideControls';
+import { hlsPlayer } from './HlsPlayer';
 
 export const features = {
   pictureInPicture,
@@ -31,4 +33,5 @@ export const features = {
   loop,
   mute,
   hideControls,
+  hlsPlayer,
 } as const;
