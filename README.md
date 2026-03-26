@@ -1,6 +1,10 @@
 # Video Companion
 
-增强网页视频播放体验的 Chrome 扩展 - 画中画、全屏、倍速控制等
+> 网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏，支持 YouTube/B站/腾讯视频等主流平台
+
+[![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/nmkklhdipnadeimbnimllidjgccbifhm?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
+[![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/nmkklhdipnadeimbnimllidjgccbifhm?label=用户数&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
+[![License](https://img.shields.io/github/license/wh131462/video-companion-extension)](LICENSE)
 
 ## 截图预览
 
@@ -18,28 +22,32 @@
 
 ## 功能特性
 
-### 视频控制
-- **画中画模式** - 将视频悬浮在其他窗口之上
-- **全屏播放** - 原生全屏模式
-- **网页全屏** - 让视频充满整个浏览器窗口
-- **倍速控制** - 自定义播放速度 (0.25x - 16x)
-- **循环播放** - 开启/关闭视频循环
-- **静音控制** - 快速切换静音状态
+### 🎬 视频控制
+| 功能 | 说明 |
+|------|------|
+| 画中画模式 | 将视频悬浮在其他窗口之上，边看边操作 |
+| 全屏播放 | 原生全屏模式 |
+| 网页全屏 | 视频充满浏览器窗口，无需进入系统全屏 |
+| 倍速控制 | 0.25x - 16x 自由调速，精细控制播放节奏 |
+| 循环播放 | 开启/关闭视频循环 |
+| 静音控制 | 快速切换静音状态 |
 
-### 视频工具
-- **视频截图** - 一键截取当前视频画面并下载
-- **视频下载** - 下载当前播放的视频，支持 HLS (m3u8) 流媒体下载
-- **通过链接播放** - 输入任意视频链接播放，支持 m3u8、mp4、webm 等格式
-- **流媒体源检测** - 自动拦截页面中的 m3u8 流媒体地址
+### 🛠 视频工具
+| 功能 | 说明 |
+|------|------|
+| 视频截图 | 一键截取当前画面并下载为 PNG |
+| 视频下载 | 下载当前视频，支持 HLS (m3u8) 流媒体下载 |
+| 通过链接播放 | 输入任意视频 URL 播放，支持 m3u8、mp4、webm 等格式 |
+| 流媒体源检测 | 自动拦截页面中的 m3u8 流媒体地址 |
+| 隐藏原生控制器 | 隐藏浏览器默认视频控制栏，使用扩展控制面板替代 |
 
-### 智能适配
-- **自动检测** - 智能识别 YouTube、Bilibili、腾讯视频、爱奇艺、优酷等主流视频网站
+### 🌐 智能适配
+- **自动检测** - 智能识别 YouTube、Bilibili、腾讯视频、爱奇艺、优酷、西瓜视频等主流平台
 - **右键菜单增强** - 所有视频均支持右键菜单快速操作
 - **控制面板** - 原生 video 元素显示悬浮控制面板，自定义播放器仅提供右键菜单
 
-### 扩展管理
+### ⚙ 扩展管理
 - **弹窗面板** - 点击扩展图标打开设置面板，可独立开关控制面板和右键菜单
-- **快捷操作** - 弹窗面板提供画中画、截图、全屏快捷按钮
 - **状态记忆** - 记住每个视频的面板显示状态
 - **拖拽移动** - 控制面板支持拖拽到任意位置
 
@@ -85,9 +93,7 @@
 
 ### 从 Chrome 网上应用店安装（推荐）
 
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/nmkklhdipnadeimbnimllidjgccbifhm?label=Chrome%20Web%20Store)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
-
-[**点击安装 Video Companion**](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
+[**👉 点击安装 Video Companion**](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
 
 ### 从源码安装
 
@@ -166,19 +172,24 @@ src/
 ## 支持的网站
 
 扩展会自动检测以下网站的自定义播放器，仅提供右键菜单增强：
-- YouTube
-- Bilibili（哔哩哔哩）
-- 腾讯视频
-- 爱奇艺
-- 优酷
-- 西瓜视频
 
-对于其他使用原生 video 元素的网站，将同时显示控制面板和右键菜单。
+| 平台 | 网址 |
+|------|------|
+| YouTube | youtube.com |
+| Bilibili（哔哩哔哩） | bilibili.com |
+| 腾讯视频 | v.qq.com |
+| 爱奇艺 | iqiyi.com |
+| 优酷 | youku.com |
+| 西瓜视频 | ixigua.com |
+
+对于其他使用原生 `<video>` 元素的网站，将同时显示控制面板和右键菜单。
 
 ## 浏览器兼容性
 
-- Chrome 122+
-- Edge 122+ (Chromium)
+| 浏览器 | 最低版本 |
+|--------|----------|
+| Chrome | 122+ |
+| Edge (Chromium) | 122+ |
 
 ## 许可证
 
@@ -190,4 +201,4 @@ src/
 
 ## 反馈与贡献
 
-欢迎提交 [Issue](https://github.com/wh131462/video-companion-extension/issues) 或 [Pull Request](https://github.com/wh131462/video-companion-extension/pulls)
+如果你在使用中遇到问题或有新功能建议，欢迎提交 [Issue](https://github.com/wh131462/video-companion-extension/issues) 或 [Pull Request](https://github.com/wh131462/video-companion-extension/pulls)。

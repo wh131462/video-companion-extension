@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Video Companion",
   "version": "1.2.4",
-  "description": "增强网页视频播放体验 - 画中画、全屏、倍速控制等",
+  "description": "网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏，支持 YouTube/B站/腾讯视频等主流平台",
   "minimum_chrome_version": "122",
   "permissions": [
     "activeTab",
