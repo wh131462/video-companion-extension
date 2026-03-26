@@ -19,6 +19,16 @@ export class M3u8SourceCollector {
     // 只在顶层 frame 监听，避免 all_frames: true 导致多个实例重复收集
     if (window !== window.top) return;
 
+    // 检查当前页面 URL 本身是否是 m3u8 文件（直接访问 m3u8 链接的场景）
+    if (/\.m3u8(\?|#|$)/i.test(location.href)) {
+      this.addSource({
+        url: location.href,
+        pageUrl: location.href,
+        timestamp: Date.now(),
+        fromIntercept: false,
+      });
+    }
+
     window.addEventListener('message', (event) => {
       if (event.source !== window || event.data?.type !== MESSAGE_TYPE) return;
       const url = event.data.url as string;

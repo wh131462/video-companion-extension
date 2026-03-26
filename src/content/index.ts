@@ -8,6 +8,7 @@ import { DEFAULT_SETTINGS } from '@shared/constants';
 import { sendMessage } from '@shared/utils';
 import { extensionController } from './core/ExtensionController';
 import { setupMessageHandler } from './handlers/message';
+
 async function loadSettings(): Promise<UserSettings> {
   const response = await sendMessage<{ success: boolean; data?: UserSettings }>({ action: 'getSettings' });
   return response?.data || DEFAULT_SETTINGS;

@@ -49,17 +49,13 @@ async function updateVideoCount(): Promise<void> {
 
     // 向 content script 发送消息获取视频数量
     const response = await chrome.tabs.sendMessage(tab.id, { action: 'getVideoCount' });
-    const count = response?.count ?? 0;
-    const m3u8Count = (response?.data as { m3u8Count?: number })?.m3u8Count ?? 0;
+    const total = response?.count ?? 0;
 
-    if (count === 0 && m3u8Count === 0) {
+    if (total === 0) {
       videoCount.textContent = '当前页面没有视频';
       videoInfo.classList.add('no-video');
     } else {
-      const parts: string[] = [];
-      if (count > 0) parts.push(`${count} 个视频`);
-      if (m3u8Count > 0) parts.push(`${m3u8Count} 个流媒体`);
-      videoCount.textContent = `检测到 ${parts.join('、')}`;
+      videoCount.textContent = `检测到 ${total} 个视频`;
       videoInfo.classList.remove('no-video');
     }
   } catch {

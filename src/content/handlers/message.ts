@@ -100,9 +100,17 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       return { success: true };
 
     case 'getVideoCount': {
-      const videos = document.querySelectorAll('video');
-      const m3u8Count = m3u8SourceCollector.getSources().length;
-      return { success: true, count: videos.length, data: { m3u8Count } };
+      const m3u8Sources = m3u8SourceCollector.getSources();
+      const m3u8Count = m3u8Sources.length;
+      // 统计非 blob: 的 video 元素（blob: 通常是 m3u8 播放器创建的，已在 m3u8Count 中统计）
+      let videoCount = 0;
+      document.querySelectorAll('video').forEach((video) => {
+        const src = video.src || video.currentSrc;
+        if (src && /^https?:\/\//i.test(src)) {
+          videoCount++;
+        }
+      });
+      return { success: true, count: videoCount + m3u8Count };
     }
 
     case 'openVideoPlayer':
