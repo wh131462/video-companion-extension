@@ -497,10 +497,6 @@ video-companion-extension/
 - [Picture-in-Picture API](https://developer.mozilla.org/en-US/docs/Web/API/Picture-in-Picture_API)
 - [Fullscreen API](https://developer.mozilla.org/en-US/docs/Web/API/Fullscreen_API)
 
-### 10.3 相关文档
-
-- [商业化规划](./COMMERCIAL.md) - 产品商业化策略、定价与推广
-
 ---
 
 *文档结束*
