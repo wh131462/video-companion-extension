@@ -182,7 +182,7 @@ export class ContextMenu {
       { divider: true },
       {
         label: '通过链接播放',
-        icon: Icons.hls,
+        icon: Icons.linkPlay,
         onClick: () => this.handlePlayM3u8(),
       }
     );

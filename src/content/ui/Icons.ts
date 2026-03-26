@@ -116,12 +116,11 @@ export const Icons = {
     <line x1="6" y1="6" x2="18" y2="18"/>
   </svg>`,
 
-  // HLS/m3u8 图标
-  hls: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M2 16V8l4 4-4 4z"/>
-    <path d="M22 16V8l-4 4 4 4z"/>
-    <rect x="7" y="4" width="10" height="16" rx="2" fill="currentColor" opacity="0.15"/>
-    <path d="M10 9h4M10 12h4M10 15h4"/>
+  // 通过链接播放图标
+  linkPlay: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+    <polygon points="15 12 19 15 15 18" fill="currentColor" opacity="0.6"/>
   </svg>`,
 
   // 重试图标

@@ -17,12 +17,18 @@
   --vc-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   --vc-radius: 12px;
   --vc-radius-sm: 8px;
+  --vc-z-tooltip: 9999;
+  --vc-z-fullscreen: 2147483640;
+  --vc-z-panel: 2147483641;
+  --vc-z-context-menu: 2147483642;
+  --vc-z-player: 2147483643;
+  --vc-z-toast: 2147483644;
 }
 
 /* 控制面板容器 - fixed 定位，由 JS 动态计算位置 */
 .vc-control-panel {
   position: fixed;
-  z-index: 2147483647;
+  z-index: var(--vc-z-panel);
   background: var(--vc-bg);
   border-radius: var(--vc-radius);
   padding: 14px 12px 8px;
@@ -208,7 +214,7 @@
   opacity: 0;
   visibility: hidden;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 9999;
+  z-index: var(--vc-z-tooltip);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
@@ -317,7 +323,7 @@
   border-radius: 24px;
   font-size: 14px;
   font-weight: 500;
-  z-index: 2147483647;
+  z-index: var(--vc-z-toast);
   opacity: 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
@@ -358,7 +364,7 @@
   height: 100vh !important;
   max-width: none !important;
   max-height: none !important;
-  z-index: 2147483646 !important;
+  z-index: var(--vc-z-fullscreen) !important;
   background: #000 !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -765,7 +771,7 @@
 /* ==================== 右键菜单 ==================== */
 .vc-context-menu {
   position: fixed;
-  z-index: 2147483647;
+  z-index: var(--vc-z-context-menu);
   min-width: 180px;
   padding: 6px 0;
   background: rgba(28, 28, 32, 0.95);
