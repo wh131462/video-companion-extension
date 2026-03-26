@@ -4,17 +4,17 @@
 
 ## 截图预览
 
-| 弹窗面板 | 视频控制面板 |
+| 控制面板（默认） | 控制面板（隐藏原生控制器） |
 |:---:|:---:|
-| ![弹窗面板](docs/snapshots/panel.png) | ![视频控制面板](docs/snapshots/controls.png) |
+| ![控制面板（默认）](docs/snapshots/controlPanel.png) | ![控制面板（隐藏原生控制器）](docs/snapshots/controlPanelClean.png) |
 
-| 可关闭面板 | 右键菜单 |
+| 右键菜单 | 自定义播放器 |
 |:---:|:---:|
-| ![可关闭面板](docs/snapshots/closable.png) | ![右键菜单](docs/snapshots/contextMenu.png) |
+| ![右键菜单](docs/snapshots/contextMenu.png) | ![自定义播放器](docs/snapshots/player.png) |
 
-| 倍速子菜单 |
+| 通过链接播放 |
 |:---:|
-| ![倍速子菜单](docs/snapshots/contextMenuFull.png) |
+| ![通过链接播放](docs/snapshots/videoPlayer.png) |
 
 ## 功能特性
 
@@ -28,7 +28,9 @@
 
 ### 视频工具
 - **视频截图** - 一键截取当前视频画面并下载
-- **视频下载** - 下载当前播放的视频
+- **视频下载** - 下载当前播放的视频，支持 HLS (m3u8) 流媒体下载
+- **通过链接播放** - 输入任意视频链接播放，支持 m3u8、mp4、webm 等格式
+- **流媒体源检测** - 自动拦截页面中的 m3u8 流媒体地址
 
 ### 智能适配
 - **自动检测** - 智能识别 YouTube、Bilibili、腾讯视频、爱奇艺、优酷等主流视频网站
@@ -45,7 +47,7 @@
 
 ### 右键菜单
 在任意视频上点击右键，即可看到增强菜单：
-- 控制面板（显示/隐藏）
+- 播放/暂停
 - 倍速调节（子菜单）
 - 循环播放 ✓
 - 静音 ✓
@@ -54,6 +56,7 @@
 - 网页全屏
 - 截图
 - 下载视频
+- 通过链接播放
 
 ### 控制面板
 对于原生 video 元素，会在视频底部显示悬浮控制面板：
@@ -146,6 +149,7 @@ src/
 │   ├── core/          # 核心逻辑（视频扫描、增强器）
 │   ├── features/      # 功能模块（倍速、截图、下载等）
 │   ├── handlers/      # 事件处理器
+│   ├── hls/           # HLS 流媒体（播放器、下载器、拦截器）
 │   ├── styles/        # 样式文件
 │   ├── ui/            # UI 组件（控制面板、右键菜单、Toast）
 │   └── utils/         # 工具函数
