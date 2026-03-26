@@ -53,14 +53,11 @@ async function updateVideoCount(): Promise<void> {
 
     if (total === 0) {
       videoCount.textContent = '当前页面没有视频';
-      videoInfo.classList.add('no-video');
     } else {
       videoCount.textContent = `检测到 ${total} 个视频`;
-      videoInfo.classList.remove('no-video');
     }
   } catch {
     videoCount.textContent = '当前页面没有视频';
-    videoInfo.classList.add('no-video');
   }
 }
 

@@ -6,6 +6,7 @@
 import type { VideoLifecycleEvents } from '@shared/types';
 import {
   MIN_VIDEO_SIZE,
+  SCAN_INTERVAL,
   VIDEO_READY_MAX_ATTEMPTS,
   VIDEO_READY_BASE_DELAY,
 } from '@shared/constants';
@@ -13,6 +14,7 @@ import {
 export class VideoLifecycleManager {
   private observer: MutationObserver | null = null;
   private resizeObserver: ResizeObserver | null = null;
+  private scanInterval: ReturnType<typeof setInterval> | null = null;
   private trackedVideos = new WeakSet<HTMLVideoElement>();
   private containerToVideo = new WeakMap<HTMLElement, HTMLVideoElement>();
   private pendingVideos = new Map<HTMLVideoElement, number>(); // video -> timeoutId
@@ -29,6 +31,9 @@ export class VideoLifecycleManager {
     this.setupMutationObserver();
     this.setupResizeObserver();
     this.initialScan();
+
+    // 定期重扫描：兜底处理初始扫描时尺寸不足或延迟加载的视频
+    this.scanInterval = setInterval(() => this.initialScan(), SCAN_INTERVAL);
   }
 
   /**
@@ -45,6 +50,12 @@ export class VideoLifecycleManager {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;
+    }
+
+    // 清理定期扫描
+    if (this.scanInterval) {
+      clearInterval(this.scanInterval);
+      this.scanInterval = null;
     }
 
     // 清理待处理的超时
@@ -108,7 +119,8 @@ export class VideoLifecycleManager {
       }
     });
 
-    this.observer.observe(document.body, {
+    const observeTarget = document.body || document.documentElement;
+    this.observer.observe(observeTarget, {
       childList: true,
       subtree: true,
     });
@@ -196,12 +208,16 @@ export class VideoLifecycleManager {
     if (this.trackedVideos.has(video)) return;
 
     // 检查尺寸是否满足最小要求
-    if (
-      video.offsetWidth < MIN_VIDEO_SIZE.width ||
-      video.offsetHeight < MIN_VIDEO_SIZE.height
-    ) {
-      // 尺寸太小，可能是广告或图标
-      return;
+    const hasMinSize =
+      video.offsetWidth >= MIN_VIDEO_SIZE.width &&
+      video.offsetHeight >= MIN_VIDEO_SIZE.height;
+
+    if (!hasMinSize) {
+      // 有明确视频源的元素放宽限制（如 HLS 流等加载较慢的场景）
+      const hasSource = !!(video.src || video.currentSrc || video.querySelector('source'));
+      if (!hasSource) {
+        return;
+      }
     }
 
     const container = video.parentElement;

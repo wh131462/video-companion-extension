@@ -64,7 +64,9 @@ const SHADOW_STYLES = `
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.5);
-  overflow-y: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .dialog h3 {
   margin: 0 0 16px;
@@ -72,6 +74,7 @@ const SHADOW_STYLES = `
   font-weight: 600;
   color: #fff;
   letter-spacing: -0.01em;
+  flex-shrink: 0;
 }
 .close-btn {
   position: absolute;
@@ -94,6 +97,7 @@ const SHADOW_STYLES = `
   display: flex;
   gap: 8px;
   margin-bottom: 16px;
+  flex-shrink: 0;
 }
 .input-row input {
   flex: 1;
@@ -134,7 +138,22 @@ const SHADOW_STYLES = `
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.source-list { display: flex; flex-direction: column; gap: 4px; }
+.source-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.dialog-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99,102,241,0.35) rgba(255,255,255,0.04);
+}
+.dialog-scroll::-webkit-scrollbar { width: 5px; }
+.dialog-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 3px; }
+.dialog-scroll::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.35); border-radius: 3px; }
+.dialog-scroll::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.55); }
 .source-item {
   display: flex;
   align-items: center;
@@ -715,20 +734,24 @@ export class HlsPlayerUI {
     inputRow.appendChild(playBtn);
     dialog.appendChild(inputRow);
 
+    // 可滚动的列表容器
+    const scrollArea = document.createElement('div');
+    scrollArea.className = 'dialog-scroll';
+
     // 流媒体源列表（m3u8）
     const m3u8Sources = m3u8SourceCollector.getSources();
     if (m3u8Sources.length > 0) {
       const lt = document.createElement('div');
       lt.className = 'list-title';
       lt.textContent = `流媒体源 (${m3u8Sources.length})`;
-      dialog.appendChild(lt);
+      scrollArea.appendChild(lt);
 
       const list = document.createElement('div');
       list.className = 'source-list';
       m3u8Sources.forEach((src) => {
         list.appendChild(this.createSourceItem(src.url, true));
       });
-      dialog.appendChild(list);
+      scrollArea.appendChild(list);
     }
 
     // 页面视频源
@@ -737,15 +760,17 @@ export class HlsPlayerUI {
       const lt = document.createElement('div');
       lt.className = 'list-title';
       lt.textContent = `页面视频 (${videoSources.length})`;
-      dialog.appendChild(lt);
+      scrollArea.appendChild(lt);
 
       const list = document.createElement('div');
       list.className = 'source-list';
       videoSources.forEach((url) => {
         list.appendChild(this.createSourceItem(url, false));
       });
-      dialog.appendChild(list);
+      scrollArea.appendChild(list);
     }
+
+    dialog.appendChild(scrollArea);
 
     overlay.appendChild(dialog);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) this.destroyDialog(); });

@@ -38,6 +38,30 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 
   // 初始化图标状态
   await initIconState();
+
+  // 创建浏览器右键菜单
+  chrome.contextMenus.create({
+    id: 'vc-play-by-link',
+    title: '通过链接播放',
+    contexts: ['page', 'video', 'link'],
+  });
+});
+
+// 处理浏览器右键菜单点击
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId === 'vc-play-by-link' && tab?.id) {
+    try {
+      await chrome.tabs.sendMessage(tab.id, { action: 'openVideoPlayer' });
+    } catch {
+      // 页面无 content script（如 chrome:// 页面），弹窗提示
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'public/icons/icon128.png',
+        title: 'Video Companion',
+        message: '当前页面不支持此功能，请在普通网页上使用',
+      });
+    }
+  }
 });
 
 // 处理来自 popup 的消息
