@@ -15,7 +15,6 @@ import {
   download,
   loop,
   mute,
-  hideControls,
 } from '../features';
 import { m3u8SourceCollector } from '../hls/M3u8SourceCollector';
 import { hlsPlayerUI } from '../hls/HlsPlayerUI';
@@ -93,15 +92,6 @@ export class ContextMenu {
       });
       items.push({ divider: true });
     }
-
-    // 隐藏/显示原生控制器
-    items.push({
-      label: this.video.controls ? '隐藏控制器' : '显示控制器',
-      icon: this.video.controls ? Icons.showControls : Icons.hideControls,
-      checked: !this.video.controls,
-      onClick: () => this.handleHideControls(),
-    });
-    items.push({ divider: true });
 
     // 播放/暂停
     items.push({
@@ -407,11 +397,6 @@ export class ContextMenu {
   private handleMute(): void {
     const isMuted = mute.toggle(this.video);
     showToast(isMuted ? '已静音' : '已取消静音');
-  }
-
-  private handleHideControls(): void {
-    const isHidden = hideControls.toggle(this.video);
-    showToast(isHidden ? '已隐藏原生控制器' : '已显示原生控制器');
   }
 
   private handlePlayPause(): void {
