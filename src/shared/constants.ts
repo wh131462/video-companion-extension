@@ -71,10 +71,14 @@ export const SPEED_RANGE = {
   max: 16,
 };
 
-// Z-Index 层级
+// Z-Index 层级（从低到高）
 export const Z_INDEX = {
-  panel: 2147483647,
-  webFullscreen: 2147483646,
+  tooltip: 9999,
+  webFullscreen: 2147483640,
+  panel: 2147483641,
+  contextMenu: 2147483642,
+  player: 2147483643,
+  toast: 2147483644,
 };
 
 // 检测缓存配置
@@ -89,7 +93,7 @@ export const VIDEO_READY_BASE_DELAY = 100;
 
 // HLS 下载配置
 export const HLS_DOWNLOAD_CONCURRENCY = 5;
-export const HLS_SEGMENT_TIMEOUT = 30000;
+export const HLS_STALL_TIMEOUT = 30000; // 30秒无数据判定网络停滞
 
 // 特性开关
 export const FEATURE_FLAGS = {

@@ -3,13 +3,14 @@
  * 在页面上下文中运行，可使用 URL.createObjectURL 触发下载
  */
 
-import { HLS_DOWNLOAD_CONCURRENCY, HLS_SEGMENT_TIMEOUT } from '@shared/constants';
+import { HLS_DOWNLOAD_CONCURRENCY, HLS_STALL_TIMEOUT } from '@shared/constants';
 import { showToast } from '../ui/Toast';
 import { generateFileName } from '@shared/utils';
 import { transmuxTsToMp4 } from './transmux';
 
 export type DownloadState =
-  | { status: 'downloading'; percent: number }
+  | { status: 'downloading'; percent: number; detail?: string }
+  | { status: 'transmuxing' }
   | { status: 'done' }
   | { status: 'error'; message: string };
 
@@ -20,14 +21,34 @@ interface M3u8Segment {
   duration: number;
 }
 
-interface M3u8Variant {
+export interface M3u8Variant {
   url: string;
   bandwidth: number;
+  resolution?: string;
+}
+
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatBandwidth(bps: number): string {
+  if (bps < 1000000) return `${(bps / 1000).toFixed(0)} Kbps`;
+  return `${(bps / 1000000).toFixed(1)} Mbps`;
 }
 
 export class HlsContentDownloader {
   private abortController: AbortController | null = null;
   private listeners = new Set<DownloadListener>();
+  private _downloading = false;
+
+  get isDownloading(): boolean {
+    return this._downloading;
+  }
 
   onStateChange(listener: DownloadListener): () => void {
     this.listeners.add(listener);
@@ -38,7 +59,19 @@ export class HlsContentDownloader {
     this.listeners.forEach((fn) => fn(state));
   }
 
-  async download(m3u8Url: string): Promise<void> {
+  /** 获取 master playlist 的所有变体（按码率从高到低），非 master 返回空数组 */
+  async getVariants(m3u8Url: string): Promise<M3u8Variant[]> {
+    const text = await this.fetchText(m3u8Url, new AbortController().signal);
+    const { variants } = this.parseM3u8(text, m3u8Url);
+    return variants.sort((a, b) => b.bandwidth - a.bandwidth);
+  }
+
+  async download(m3u8Url: string, selectedVariant?: M3u8Variant): Promise<void> {
+    if (this._downloading) {
+      showToast('已有下载任务进行中');
+      return;
+    }
+    this._downloading = true;
     this.abortController = new AbortController();
     const signal = this.abortController.signal;
 
@@ -49,11 +82,13 @@ export class HlsContentDownloader {
       const m3u8Text = await this.fetchText(m3u8Url, signal);
       let { segments, variants, mapUrl } = this.parseM3u8(m3u8Text, m3u8Url);
 
-      // 2. 如果是 master playlist，选最高码率
+      // 2. 如果是 master playlist，使用指定变体或最高码率
       if (variants.length > 0) {
-        const best = variants.sort((a, b) => b.bandwidth - a.bandwidth)[0]!;
-        const variantText = await this.fetchText(best.url, signal);
-        const parsed = this.parseM3u8(variantText, best.url);
+        const chosen = selectedVariant ?? variants.sort((a, b) => b.bandwidth - a.bandwidth)[0]!;
+        const label = chosen.resolution || formatBandwidth(chosen.bandwidth);
+        showToast(`下载质量: ${label}`);
+        const variantText = await this.fetchText(chosen.url, signal);
+        const parsed = this.parseM3u8(variantText, chosen.url);
         segments = parsed.segments;
         mapUrl = parsed.mapUrl;
       }
@@ -73,14 +108,18 @@ export class HlsContentDownloader {
       // 4. 并发下载所有分段
       const chunks: ArrayBuffer[] = new Array(segments.length);
       let completed = 0;
+      let totalBytes = 0;
+      const startTime = Date.now();
 
-      await this.downloadSegments(segments, chunks, signal, () => {
+      await this.downloadSegments(segments, chunks, signal, (_idx, size) => {
         completed++;
+        totalBytes += size;
         const percent = Math.round((completed / segments.length) * 100);
-        this.notify({ status: 'downloading', percent });
-        if (percent % 10 === 0 || completed === segments.length) {
-          showToast(`HLS 下载中: ${percent}%`);
-        }
+        const elapsed = (Date.now() - startTime) / 1000;
+        const speed = totalBytes / elapsed;
+        const detail = `${completed}/${segments.length} · ${formatBytes(totalBytes)} · ${formatBytes(speed)}/s`;
+        this.notify({ status: 'downloading', percent, detail });
+        showToast(`下载中: ${percent}% (${detail})`);
       });
 
       // 5. init segment 放在最前面
@@ -89,7 +128,8 @@ export class HlsContentDownloader {
       }
 
       // 6. 转封装 TS → MP4 并触发浏览器下载
-      showToast('正在转封装为 MP4...');
+      showToast('正在转封装为 MP4，请稍候...');
+      this.notify({ status: 'transmuxing' });
       const blob = await transmuxTsToMp4(chunks);
       const blobUrl = URL.createObjectURL(blob);
 
@@ -101,7 +141,8 @@ export class HlsContentDownloader {
       document.body.removeChild(link);
 
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
-      showToast('HLS 视频下载完成');
+      const totalSize = formatBytes(totalBytes);
+      showToast(`下载完成 (${totalSize})`);
       this.notify({ status: 'done' });
     } catch (error) {
       if (signal.aborted) {
@@ -114,6 +155,7 @@ export class HlsContentDownloader {
       }
     } finally {
       this.abortController = null;
+      this._downloading = false;
     }
   }
 
@@ -157,11 +199,13 @@ export class HlsContentDownloader {
         }
       } else if (line.startsWith('#EXT-X-STREAM-INF:')) {
         const bwMatch = line.match(/BANDWIDTH=(\d+)/);
+        const resMatch = line.match(/RESOLUTION=(\d+x\d+)/);
         const nextLine = lines[i + 1];
         if (nextLine && !nextLine.startsWith('#')) {
           variants.push({
             url: this.resolveUrl(baseUrl, nextLine),
             bandwidth: bwMatch ? parseInt(bwMatch[1]!, 10) : 0,
+            resolution: resMatch ? resMatch[1] : undefined,
           });
           i++;
         }
@@ -190,11 +234,81 @@ export class HlsContentDownloader {
     }
   }
 
+  /**
+   * 使用 ReadableStream 下载分段，基于停滞检测而非固定超时。
+   * 只要数据持续到达就不中断，连续 HLS_STALL_TIMEOUT 毫秒无新数据才 abort。
+   */
+  private async fetchSegmentWithRetry(
+    url: string,
+    signal: AbortSignal
+  ): Promise<ArrayBuffer> {
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      const controller = new AbortController();
+      const onAbort = () => controller.abort();
+      signal.addEventListener('abort', onAbort, { once: true });
+
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: { 'X-VC-Internal': '1' },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        // 使用 ReadableStream 逐块读取，监控数据流动
+        const reader = response.body!.getReader();
+        const chunks: Uint8Array[] = [];
+        let loaded = 0;
+        let lastDataTime = Date.now();
+
+        // 停滞检测定时器：每 5 秒检查一次是否有新数据
+        const stallTimer = setInterval(() => {
+          if (Date.now() - lastDataTime > HLS_STALL_TIMEOUT) {
+            controller.abort();
+          }
+        }, 5000);
+
+        try {
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            loaded += value.byteLength;
+            lastDataTime = Date.now();
+          }
+        } finally {
+          clearInterval(stallTimer);
+        }
+
+        // 合并 chunks
+        const result = new Uint8Array(loaded);
+        let offset = 0;
+        for (const chunk of chunks) {
+          result.set(chunk, offset);
+          offset += chunk.byteLength;
+        }
+        return result.buffer as ArrayBuffer;
+      } catch (err) {
+        if (signal.aborted) throw err;
+        if (attempt < MAX_RETRIES) {
+          showToast(`分段下载失败，第 ${attempt + 1} 次重试...`);
+          await new Promise((r) => setTimeout(r, RETRY_DELAY * (attempt + 1)));
+          continue;
+        }
+        throw new Error(`分段下载失败（已重试 ${MAX_RETRIES} 次）: ${url.split('/').pop()}`);
+      } finally {
+        signal.removeEventListener('abort', onAbort);
+      }
+    }
+    throw new Error('不可达');
+  }
+
   private async downloadSegments(
     segments: M3u8Segment[],
     chunks: ArrayBuffer[],
     signal: AbortSignal,
-    onSegmentDone: () => void
+    onSegmentDone: (idx: number, size: number) => void
   ): Promise<void> {
     let nextIndex = 0;
 
@@ -205,28 +319,9 @@ export class HlsContentDownloader {
         const idx = nextIndex++;
         const segment = segments[idx]!;
 
-        const controller = new AbortController();
-        const timeout = setTimeout(
-          () => controller.abort(),
-          HLS_SEGMENT_TIMEOUT
-        );
-
-        const onAbort = () => controller.abort();
-        signal.addEventListener('abort', onAbort, { once: true });
-
-        try {
-          const response = await fetch(segment.url, {
-            signal: controller.signal,
-          });
-          if (!response.ok) {
-            throw new Error(`分段 ${idx} 下载失败: ${response.status}`);
-          }
-          chunks[idx] = await response.arrayBuffer();
-          onSegmentDone();
-        } finally {
-          clearTimeout(timeout);
-          signal.removeEventListener('abort', onAbort);
-        }
+        const buf = await this.fetchSegmentWithRetry(segment.url, signal);
+        chunks[idx] = buf;
+        onSegmentDone(idx, buf.byteLength);
       }
     };
 

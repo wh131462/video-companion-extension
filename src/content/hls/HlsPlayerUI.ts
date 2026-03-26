@@ -6,9 +6,9 @@
 
 import { m3u8SourceCollector } from './M3u8SourceCollector';
 import { hlsPlayer } from '../features/HlsPlayer';
-import { hlsContentDownloader } from './HlsContentDownloader';
+import { hlsContentDownloader, type M3u8Variant } from './HlsContentDownloader';
 import { showToast } from '../ui/Toast';
-import { SPEED_OPTIONS } from '@shared/constants';
+import { SPEED_OPTIONS, Z_INDEX } from '@shared/constants';
 import { generateFileName } from '@shared/utils';
 
 const M3U8_URL_PATTERN = /\.m3u8(\?|#|$)/i;
@@ -26,6 +26,7 @@ const SVG = {
   fullscreen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>',
   exitFullscreen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg>',
   retry: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>',
+  loop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
 };
 
 // ===== 内联样式 =====
@@ -35,7 +36,7 @@ const SHADOW_STYLES = `
   position: fixed;
   top: 0; left: 0;
   width: 0; height: 0;
-  z-index: 2147483647;
+  z-index: ${Z_INDEX.player};
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: #e4e4e7;
 }
@@ -422,6 +423,7 @@ const SHADOW_STYLES = `
 .vol-group {
   display: flex;
   align-items: center;
+  position: relative;
 }
 .vol-slider-wrap {
   width: 0;
@@ -461,6 +463,24 @@ const SHADOW_STYLES = `
   cursor: pointer;
   border: none;
 }
+.vol-slider-wrap { position: relative; }
+.vol-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  background: rgba(22,22,28,0.95);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 20;
+}
+.vol-tip.show { opacity: 1; }
 
 /* 倍速 */
 .spd-btn {
@@ -499,7 +519,13 @@ const SHADOW_STYLES = `
   transition: opacity 0.12s ease, transform 0.12s ease;
   max-height: 240px;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
 }
+.spd-menu::-webkit-scrollbar { width: 4px; }
+.spd-menu::-webkit-scrollbar-track { background: transparent; }
+.spd-menu::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+.spd-menu::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 .spd-menu.show {
   display: flex;
   opacity: 1;
@@ -525,6 +551,10 @@ const SHADOW_STYLES = `
   color: #fff;
   font-weight: 600;
 }
+
+/* 循环播放 */
+.btn-loop { opacity: 0.45; }
+.btn-loop.on { opacity: 1; color: #a78bfa; }
 
 /* 分隔竖线 */
 .sep {
@@ -552,6 +582,75 @@ const SHADOW_STYLES = `
   border-bottom: 2px solid rgba(255,255,255,0.15);
 }
 .resize-handle:hover::before { border-color: rgba(255,255,255,0.4); }
+
+/* 质量选择弹窗 */
+.quality-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.quality-dialog {
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 20px;
+  min-width: 280px;
+  max-width: 360px;
+  color: #fff;
+}
+.quality-dialog h3 {
+  margin: 0 0 14px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.quality-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.quality-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.quality-item:hover { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); }
+.quality-item.selected { background: rgba(139,92,246,0.2); border-color: #8b5cf6; }
+.quality-item .q-label { font-size: 13px; font-weight: 500; }
+.quality-item .q-bw { font-size: 11px; color: rgba(255,255,255,0.5); }
+.quality-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.quality-actions button {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.quality-actions .q-cancel {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+}
+.quality-actions .q-cancel:hover { background: rgba(255,255,255,0.15); }
+.quality-actions .q-confirm {
+  background: #8b5cf6;
+  color: #fff;
+}
+.quality-actions .q-confirm:hover { background: #7c3aed; }
 `;
 
 function fmt(sec: number): string {
@@ -574,7 +673,7 @@ export class HlsPlayerUI {
     const style = document.createElement('style');
     style.textContent = SHADOW_STYLES;
     this.shadow.appendChild(style);
-    document.documentElement.appendChild(this.host);
+    document.body.appendChild(this.host);
     return this.shadow;
   }
 
@@ -740,8 +839,11 @@ export class HlsPlayerUI {
       volSlider.className = 'vol-slider';
       volSlider.min = '0'; volSlider.max = '1'; volSlider.step = '0.02'; volSlider.value = '1';
       volSlider.style.setProperty('--v', '100%');
+      const volTip = document.createElement('div');
+      volTip.className = 'vol-tip';
+      volTip.textContent = '100%';
       volWrap.appendChild(volSlider);
-      volGrp.append(btnVol, volWrap);
+      volGrp.append(btnVol, volWrap, volTip);
 
       const sep1 = this.mkSep();
 
@@ -762,13 +864,15 @@ export class HlsPlayerUI {
       });
       spdWrap.append(spdBtn, spdMenu);
 
+      const btnLoop = this.mkCb('btn-loop', SVG.loop);
+
       const sep2 = this.mkSep();
       const btnShot = this.mkCb('', SVG.screenshot);
       const btnDl = this.mkCb('', SVG.download);
       const btnPip = this.mkCb('', SVG.pip);
       const btnFs = this.mkCb('btn-fs', SVG.fullscreen);
 
-      row.append(btnPlay, timeEl, spacer, volGrp, sep1, spdWrap, sep2, btnShot, btnDl, btnPip, btnFs);
+      row.append(btnPlay, timeEl, spacer, volGrp, sep1, spdWrap, btnLoop, sep2, btnShot, btnDl, btnPip, btnFs);
       ctrl.append(progWrap, row);
 
       area.append(video, centerIcon, loading, ctrl);
@@ -785,8 +889,8 @@ export class HlsPlayerUI {
         pw, area, video, centerIcon, loading,
         progWrap, progTrack, progBuf, progFill, progDot, progTip,
         btnPlay, timeEl,
-        btnVol, volSlider,
-        spdBtn, spdMenu,
+        btnVol, volSlider, volTip,
+        spdBtn, spdMenu, btnLoop,
         btnShot, btnDl, btnPip, btnFs,
         closeBtn, tb, resize, url, isM3u8,
       });
@@ -833,8 +937,8 @@ export class HlsPlayerUI {
     progBuf: HTMLElement; progFill: HTMLElement;
     progDot: HTMLElement; progTip: HTMLElement;
     btnPlay: HTMLButtonElement; timeEl: HTMLElement;
-    btnVol: HTMLButtonElement; volSlider: HTMLInputElement;
-    spdBtn: HTMLButtonElement; spdMenu: HTMLElement;
+    btnVol: HTMLButtonElement; volSlider: HTMLInputElement; volTip: HTMLElement;
+    spdBtn: HTMLButtonElement; spdMenu: HTMLElement; btnLoop: HTMLButtonElement;
     btnShot: HTMLButtonElement; btnDl: HTMLButtonElement;
     btnPip: HTMLButtonElement; btnFs: HTMLButtonElement;
     closeBtn: HTMLButtonElement; tb: HTMLElement;
@@ -938,12 +1042,20 @@ export class HlsPlayerUI {
       c.btnVol.innerHTML = svg;
     };
     c.btnVol.addEventListener('click', () => { video.muted = !video.muted; syncVolIcon(); });
+    let volTipTimer: ReturnType<typeof setTimeout> | null = null;
+    const showVolTip = (v: number) => {
+      c.volTip.textContent = `${Math.round(v * 100)}%`;
+      c.volTip.classList.add('show');
+      if (volTipTimer) clearTimeout(volTipTimer);
+      volTipTimer = setTimeout(() => c.volTip.classList.remove('show'), 800);
+    };
     c.volSlider.addEventListener('input', () => {
       const v = parseFloat(c.volSlider.value);
       video.volume = v;
       video.muted = v === 0;
       c.volSlider.style.setProperty('--v', `${v * 100}%`);
       syncVolIcon();
+      showVolTip(v);
     });
     video.addEventListener('volumechange', () => {
       if (!video.muted) {
@@ -970,6 +1082,12 @@ export class HlsPlayerUI {
       c.spdMenu.classList.remove('show');
     });
     c.pw.addEventListener('click', () => { if (spdOpen) { spdOpen = false; c.spdMenu.classList.remove('show'); } });
+
+    // -- 循环播放 --
+    c.btnLoop.addEventListener('click', () => {
+      video.loop = !video.loop;
+      c.btnLoop.classList.toggle('on', video.loop);
+    });
 
     // -- 截图 --
     c.btnShot.addEventListener('click', () => {
@@ -1070,6 +1188,13 @@ export class HlsPlayerUI {
   /** 收集页面中所有 video 元素的直接 URL 源 */
   private collectVideoSources(): string[] {
     const urls = new Set<string>();
+
+    // 检查当前页面 URL 本身是否是视频文件（直接访问视频链接的场景）
+    const VIDEO_FILE_PATTERN = /\.(mp4|webm|ogg|mkv|avi|mov)(\?|#|$)/i;
+    if (VIDEO_FILE_PATTERN.test(location.href)) {
+      urls.add(location.href);
+    }
+
     document.querySelectorAll('video').forEach((video) => {
       const src = video.src || video.currentSrc;
       if (src && /^https?:\/\//i.test(src)) {
@@ -1140,8 +1265,45 @@ export class HlsPlayerUI {
   }
 
   private startDownloadWithProgress(btn: HTMLButtonElement, url: string): void {
+    if (hlsContentDownloader.isDownloading) {
+      showToast('已有下载任务进行中');
+      return;
+    }
     const originalContent = btn.innerHTML;
     const isActionBtn = btn.classList.contains('action-btn');
+    btn.disabled = true;
+    if (isActionBtn) {
+      btn.textContent = '解析中...';
+    }
+
+    // 先检测是否有多个质量可选
+    hlsContentDownloader.getVariants(url).then((variants) => {
+      if (variants.length > 1) {
+        // 弹出质量选择
+        btn.disabled = false;
+        if (isActionBtn) btn.textContent = '下载';
+        else btn.innerHTML = originalContent;
+        this.showQualityPicker(btn, url, variants);
+      } else {
+        // 只有一个或无变体，直接下载
+        this.doDownloadWithProgress(btn, url, originalContent, isActionBtn);
+      }
+    }).catch(() => {
+      // 解析失败，直接尝试下载
+      this.doDownloadWithProgress(btn, url, originalContent, isActionBtn);
+    });
+  }
+
+  private doDownloadWithProgress(
+    btn: HTMLButtonElement,
+    url: string,
+    originalContent: string,
+    isActionBtn: boolean,
+    variant?: M3u8Variant
+  ): void {
+    btn.disabled = true;
+    if (isActionBtn) btn.textContent = '准备中...';
+
     const unsubscribe = hlsContentDownloader.onStateChange((state) => {
       switch (state.status) {
         case 'downloading':
@@ -1151,7 +1313,15 @@ export class HlsPlayerUI {
             btn.innerHTML = `<span style="font-size:11px;color:#fff">${state.percent}%</span>`;
           }
           break;
+        case 'transmuxing':
+          if (isActionBtn) {
+            btn.textContent = '转码中';
+          } else {
+            btn.innerHTML = `<span style="font-size:10px;color:#fff">转码中</span>`;
+          }
+          break;
         case 'error':
+          btn.disabled = false;
           if (isActionBtn) {
             btn.textContent = '重试';
           } else {
@@ -1164,6 +1334,7 @@ export class HlsPlayerUI {
           unsubscribe();
           break;
         case 'done':
+          btn.disabled = false;
           if (isActionBtn) {
             btn.textContent = '下载';
           } else {
@@ -1174,7 +1345,82 @@ export class HlsPlayerUI {
           break;
       }
     });
-    hlsContentDownloader.download(url);
+    hlsContentDownloader.download(url, variant);
+  }
+
+  private showQualityPicker(
+    btn: HTMLButtonElement,
+    url: string,
+    variants: M3u8Variant[]
+  ): void {
+    if (!this.shadow) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'quality-overlay';
+
+    const dialog = document.createElement('div');
+    dialog.className = 'quality-dialog';
+
+    const title = document.createElement('h3');
+    title.textContent = '选择下载质量';
+    dialog.appendChild(title);
+
+    const list = document.createElement('div');
+    list.className = 'quality-list';
+
+    let selected = variants[0]!; // 默认选最高
+    const items: HTMLDivElement[] = [];
+
+    variants.forEach((v, i) => {
+      const item = document.createElement('div');
+      item.className = 'quality-item' + (i === 0 ? ' selected' : '');
+
+      const label = document.createElement('span');
+      label.className = 'q-label';
+      const res = v.resolution;
+      const height = res ? res.split('x')[1] : null;
+      label.textContent = height ? `${height}p` : `变体 ${i + 1}`;
+
+      const bw = document.createElement('span');
+      bw.className = 'q-bw';
+      const mbps = v.bandwidth / 1000000;
+      bw.textContent = mbps >= 1 ? `${mbps.toFixed(1)} Mbps` : `${(v.bandwidth / 1000).toFixed(0)} Kbps`;
+
+      item.append(label, bw);
+      item.addEventListener('click', () => {
+        items.forEach((it) => it.classList.remove('selected'));
+        item.classList.add('selected');
+        selected = v;
+      });
+      items.push(item);
+      list.appendChild(item);
+    });
+
+    dialog.appendChild(list);
+
+    const actions = document.createElement('div');
+    actions.className = 'quality-actions';
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'q-cancel';
+    cancelBtn.textContent = '取消';
+    cancelBtn.addEventListener('click', () => overlay.remove());
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'q-confirm';
+    confirmBtn.textContent = '开始下载';
+    confirmBtn.addEventListener('click', () => {
+      overlay.remove();
+      const originalContent = btn.innerHTML;
+      const isActionBtn = btn.classList.contains('action-btn');
+      this.doDownloadWithProgress(btn, url, originalContent, isActionBtn, selected);
+    });
+
+    actions.append(cancelBtn, confirmBtn);
+    dialog.appendChild(actions);
+
+    overlay.appendChild(dialog);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+    this.shadow.appendChild(overlay);
   }
   private truncUrl(url: string, n: number): string {
     return url.length <= n ? url : url.slice(0, n - 3) + '...';

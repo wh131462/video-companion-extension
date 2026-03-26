@@ -199,10 +199,10 @@ export class ControlPanel {
     });
     buttonContainer.appendChild(this.downloadButton);
 
-    // 9. HLS 按钮
+    // 9. 通过链接播放按钮
     buttonContainer.appendChild(this.createButton({
-      icon: Icons.hls,
-      title: 'HLS',
+      icon: Icons.linkPlay,
+      title: '通过链接播放',
       onClick: () => this.handleHls(),
     }));
 
@@ -582,6 +582,10 @@ export class ControlPanel {
       switch (state.status) {
         case 'downloading':
           this.downloadButton.innerHTML = `<span style="font-size:11px;position:relative;z-index:1">${state.percent}%</span>`;
+          if (tooltip) this.downloadButton.appendChild(tooltip);
+          break;
+        case 'transmuxing':
+          this.downloadButton.innerHTML = `<span style="font-size:10px;position:relative;z-index:1">转码中</span>`;
           if (tooltip) this.downloadButton.appendChild(tooltip);
           break;
         case 'error':
