@@ -27,8 +27,8 @@
       <!-- 控制面板开关 -->
       <div class="switch-row">
         <div class="switch-info">
-          <span class="switch-label">控制面板</span>
-          <span class="switch-desc">视频底部悬浮面板</span>
+          <span class="switch-label" data-i18n="popupControlPanel">控制面板</span>
+          <span class="switch-desc" data-i18n="popupControlPanelDesc">视频底部悬浮面板</span>
         </div>
         <label class="toggle">
           <input type="checkbox" id="panel-toggle" checked>
@@ -39,8 +39,8 @@
       <!-- 右键菜单开关 -->
       <div class="switch-row">
         <div class="switch-info">
-          <span class="switch-label">右键菜单</span>
-          <span class="switch-desc">视频增强右键菜单</span>
+          <span class="switch-label" data-i18n="popupContextMenu">右键菜单</span>
+          <span class="switch-desc" data-i18n="popupContextMenuDesc">视频增强右键菜单</span>
         </div>
         <label class="toggle">
           <input type="checkbox" id="context-menu-toggle" checked>
@@ -50,7 +50,7 @@
     </div>
 
     <!-- 视频信息 + 播放器入口 -->
-    <div class="video-info" id="video-info" title="点击打开视频播放器">
+    <div class="video-info" id="video-info" data-i18n-title="popupOpenPlayer" title="点击打开视频播放器">
       <div class="info-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polygon points="23 7 16 12 23 17 23 7"></polygon>
@@ -58,8 +58,8 @@
         </svg>
       </div>
       <div class="info-text">
-        <span id="video-count">检测中...</span>
-        <span class="info-hint">点击通过链接播放</span>
+        <span id="video-count" data-i18n="popupDetecting">检测中...</span>
+        <span class="info-hint" data-i18n="popupClickToPlay">点击通过链接播放</span>
       </div>
       <div class="info-arrow">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -76,6 +76,14 @@
         </svg>
         GitHub
       </a>
+      <button id="lang-toggle" class="footer-link lang-btn" data-i18n-title="popupSwitchLanguage" title="切换语言">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+        <span id="lang-label">EN</span>
+      </button>
     </footer>
   </div>
 

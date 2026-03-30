@@ -5,6 +5,7 @@
 import type { Message, MessageResponse, UserSettings } from '@shared/types';
 import { DEFAULT_SETTINGS } from '@shared/constants';
 import { sendMessage } from '@shared/utils';
+import { t, setLanguage } from '@shared/i18n';
 import { videoEnhancer } from '../core/VideoEnhancer';
 import { extensionController } from '../core/ExtensionController';
 import { showToast } from '../ui/Toast';
@@ -51,14 +52,14 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       if (video) {
         const { screenshot } = await import('../features');
         screenshot.capture(video);
-        showToast('截图已保存');
+        showToast(t('toastScreenshotSaved'));
       }
       return { success: true };
 
     case 'setSpeed':
       if (video && message.speed !== undefined) {
         const speed = playbackSpeed.setSpeed(video, message.speed);
-        showToast(`播放速度: ${speed}x`);
+        showToast(t('toastSpeed', `${speed}x`));
         videoEnhancer.getPanel(video)?.updateSpeedDisplay(speed);
       }
       return { success: true };
@@ -66,7 +67,7 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
     case 'speedUp':
       if (video) {
         const speed = playbackSpeed.increaseSpeed(video);
-        showToast(`播放速度: ${speed.toFixed(2)}x`);
+        showToast(t('toastSpeed', `${speed.toFixed(2)}x`));
         videoEnhancer.getPanel(video)?.updateSpeedDisplay(speed);
       }
       return { success: true };
@@ -74,13 +75,17 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
     case 'speedDown':
       if (video) {
         const speed = playbackSpeed.decreaseSpeed(video);
-        showToast(`播放速度: ${speed.toFixed(2)}x`);
+        showToast(t('toastSpeed', `${speed.toFixed(2)}x`));
         videoEnhancer.getPanel(video)?.updateSpeedDisplay(speed);
       }
       return { success: true };
 
     case 'settingsChanged':
       if (message.settings) {
+        // 处理语言变更
+        if ('language' in message.settings) {
+          setLanguage(message.settings.language);
+        }
         videoEnhancer.updateSettings(message.settings as UserSettings);
       }
       return { success: true };
@@ -90,13 +95,13 @@ async function handleMessage(message: Message): Promise<MessageResponse> {
       const response = await sendMessage<{ success: boolean; data?: UserSettings }>({ action: 'getSettings' });
       const settings = response?.data || DEFAULT_SETTINGS;
       extensionController.enable(settings);
-      showToast('Video Companion 已启用');
+      showToast(t('toastEnabled'));
       return { success: true };
     }
 
     case 'extensionDisabled':
       extensionController.disable();
-      showToast('Video Companion 已禁用');
+      showToast(t('toastDisabled'));
       return { success: true };
 
     case 'getVideoCount': {

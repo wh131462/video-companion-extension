@@ -12,6 +12,7 @@ export interface UserSettings {
   enableShortcuts: boolean;
   autoHidePanel: boolean;
   autoHideDelay: number;
+  language?: string;
 }
 
 // 面板位置

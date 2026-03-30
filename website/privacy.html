@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隐私政策 - Video Companion</title>
+    <title data-i18n-key="privacy.title">隐私政策 - Video Companion</title>
     <meta name="description" content="Video Companion 隐私政策 - 了解我们如何保护您的隐私">
 
     <!-- Favicon -->
@@ -36,7 +36,7 @@
                     <img src="./assets/images/favicon-48.png" alt="Logo" class="w-8 h-8">
                     <span class="font-bold text-lg">Video Companion</span>
                 </a>
-                <a href="./index.html" class="text-gray-300 hover:text-white transition">
+                <a href="./index.html" class="text-gray-300 hover:text-white transition" data-i18n-html="privacy.backHome">
                     &larr; 返回首页
                 </a>
             </div>
@@ -46,7 +46,10 @@
     <!-- Main Content -->
     <main class="pt-24 pb-16 px-4">
         <article class="max-w-4xl mx-auto prose prose-invert">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-2 gradient-text">隐私政策</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2 gradient-text" data-i18n="privacy.heading">隐私政策</h1>
+
+            <!-- 中文版本 -->
+            <div data-i18n-section="zh-CN">
             <p class="text-gray-400 mb-8">最后更新日期：2025年1月14日</p>
 
             <div class="glass-card p-6 rounded-xl mb-8 border-l-4 border-green-500">
@@ -207,45 +210,173 @@
             </section>
 
             <hr class="border-gray-700 my-12">
+            </div>
 
             <!-- English Version -->
-            <section>
-                <h2 class="text-2xl font-bold mb-4">Privacy Policy (English)</h2>
-                <p class="text-gray-400 mb-4">Last Updated: January 14, 2025</p>
+            <div data-i18n-section="en">
+            <p class="text-gray-400 mb-8">Last Updated: January 14, 2025</p>
 
-                <h3 class="text-xl font-semibold mb-3 text-gray-200">Overview</h3>
-                <p class="text-gray-300 mb-6">
-                    Video Companion is a browser extension designed to enhance the web video playback experience. We take user privacy seriously. <strong>This Extension does not collect, store, or transmit any personal user data.</strong>
-                </p>
+            <div class="glass-card p-6 rounded-xl mb-8 border-l-4 border-green-500">
+                <p class="text-lg font-medium text-green-400">Core Commitment</p>
+                <p class="text-gray-300 mt-2">This Extension does not collect, store, or transmit any personal user data.</p>
+            </div>
 
-                <h3 class="text-xl font-semibold mb-3 text-gray-200">Data Collection</h3>
-                <p class="text-gray-300 mb-4">We don't collect:</p>
-                <ul class="list-disc list-inside text-gray-400 space-y-1 mb-6">
-                    <li>Personal identification information</li>
-                    <li>Browsing history or search queries</li>
-                    <li>Passwords, credentials, or payment information</li>
-                    <li>Location data, IP addresses, or device identifiers</li>
-                </ul>
-
-                <h3 class="text-xl font-semibold mb-3 text-gray-200">Local Storage</h3>
-                <p class="text-gray-300 mb-6">
-                    The Extension only stores user preferences (playback speed, panel settings) locally using Chrome's Storage API. This data is never transmitted externally.
-                </p>
-
-                <h3 class="text-xl font-semibold mb-3 text-gray-200">Contact</h3>
-                <p class="text-gray-300">
-                    Email: <a href="mailto:hao131462@qq.com" class="text-primary hover:underline">hao131462@qq.com</a><br>
-                    GitHub: <a href="https://github.com/wh131462" target="_blank" class="text-primary hover:underline">https://github.com/wh131462</a>
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">Overview</h2>
+                <p class="text-gray-300 leading-relaxed">
+                    Video Companion is a browser extension designed to enhance the web video playback experience. We take user privacy seriously. This privacy policy explains how this Extension handles user data.
                 </p>
             </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">1. Data Collection</h2>
+
+                <h3 class="text-xl font-semibold mb-3 text-gray-200">Data We Do Not Collect</h3>
+                <ul class="list-disc list-inside text-gray-300 space-y-1 mb-6">
+                    <li>Personal identification information (name, email, phone, etc.)</li>
+                    <li>Browsing history</li>
+                    <li>Search queries</li>
+                    <li>Passwords or login credentials</li>
+                    <li>Payment information</li>
+                    <li>Location data</li>
+                    <li>IP addresses</li>
+                    <li>Device identifiers</li>
+                </ul>
+
+                <h3 class="text-xl font-semibold mb-3 text-gray-200">Locally Stored Data</h3>
+                <p class="text-gray-300 mb-4">This Extension only stores the following preferences locally in the user's browser:</p>
+
+                <div class="overflow-x-auto mb-4">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="px-4 py-3 text-left">Data Type</th>
+                                <th class="px-4 py-3 text-left">Purpose</th>
+                                <th class="px-4 py-3 text-left">Storage Location</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            <tr>
+                                <td class="px-4 py-3 text-gray-300">Default playback speed</td>
+                                <td class="px-4 py-3 text-gray-400">Remember user's preferred playback speed</td>
+                                <td class="px-4 py-3 text-gray-400">Local Chrome Storage</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 text-gray-300">Panel display settings</td>
+                                <td class="px-4 py-3 text-gray-400">Remember control panel display preferences</td>
+                                <td class="px-4 py-3 text-gray-400">Local Chrome Storage</td>
+                            </tr>
+                            <tr>
+                                <td class="px-4 py-3 text-gray-300">Auto-hide delay</td>
+                                <td class="px-4 py-3 text-gray-400">Customize panel auto-hide timing</td>
+                                <td class="px-4 py-3 text-gray-400">Local Chrome Storage</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p class="text-gray-400 text-sm">
+                    This data is stored entirely on the user's local device, is never uploaded to any server, is never shared with any third party, and can be deleted at any time by uninstalling the Extension.
+                </p>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">2. Permission Usage</h2>
+                <p class="text-gray-300 mb-6">This Extension requests the following browser permissions, used solely for core functionality:</p>
+
+                <div class="space-y-6">
+                    <div class="glass-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-indigo-400 mb-2">Host Permissions (<code class="bg-gray-800 px-1 rounded">&lt;all_urls&gt;</code>)</h4>
+                        <p class="text-gray-300 text-sm">Used to detect and enhance HTML5 video elements on any webpage. Videos can appear on any website, and the Extension needs to identify and add control features to them.</p>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-indigo-400 mb-2">activeTab Permission</h4>
+                        <p class="text-gray-300 text-sm">Gains access to the current tab when the user actively clicks the Extension icon or uses a keyboard shortcut. Only activated on user interaction.</p>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-indigo-400 mb-2">scripting Permission</h4>
+                        <p class="text-gray-300 text-sm">Injects content scripts into webpages to enable video detection and control panel functionality.</p>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-indigo-400 mb-2">storage Permission</h4>
+                        <p class="text-gray-300 text-sm">Stores user preferences locally.</p>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-lg">
+                        <h4 class="font-semibold text-indigo-400 mb-2">contextMenus Permission</h4>
+                        <p class="text-gray-300 text-sm">Displays a quick-access menu when the user right-clicks a video, providing shortcuts for picture-in-picture, screenshot, and other actions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">3. Third-Party Services</h2>
+                <div class="glass-card p-6 rounded-xl">
+                    <p class="text-gray-300 mb-4">This Extension:</p>
+                    <ul class="space-y-2 text-gray-300">
+                        <li class="flex items-center"><span class="text-red-400 mr-2">&#10005;</span> Does not use any third-party analytics services</li>
+                        <li class="flex items-center"><span class="text-red-400 mr-2">&#10005;</span> Does not use any advertising services</li>
+                        <li class="flex items-center"><span class="text-red-400 mr-2">&#10005;</span> Does not use any user tracking services</li>
+                        <li class="flex items-center"><span class="text-red-400 mr-2">&#10005;</span> Does not connect to any external servers</li>
+                        <li class="flex items-center"><span class="text-red-400 mr-2">&#10005;</span> Does not load any remote code</li>
+                    </ul>
+                    <p class="text-gray-400 mt-4 text-sm">All functionality is bundled locally and runs completely offline.</p>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">4. Data Security</h2>
+                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                    <li>This Extension does not transmit any data, so there is no risk of data leakage</li>
+                    <li>All locally stored settings use Chrome's official Storage API, protected by browser security mechanisms</li>
+                    <li>Source code is open source and open to public scrutiny</li>
+                </ul>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">5. User Rights</h2>
+                <p class="text-gray-300 mb-4">Users have the right to:</p>
+                <ul class="list-disc list-inside text-gray-300 space-y-2">
+                    <li><strong>Access</strong>: View all local data stored by this Extension (via Chrome Developer Tools)</li>
+                    <li><strong>Delete</strong>: Remove all local data by uninstalling the Extension</li>
+                    <li><strong>Control</strong>: Disable or enable the Extension at any time</li>
+                </ul>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">6. Compliance</h2>
+                <p class="text-gray-300">This Extension complies with:</p>
+                <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
+                    <li>Chrome Web Store Developer Program Policies</li>
+                    <li>General Data Protection Regulation (GDPR) requirements</li>
+                    <li>California Consumer Privacy Act (CCPA) requirements</li>
+                </ul>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-2xl font-bold mb-4">7. Contact</h2>
+                <p class="text-gray-300 mb-4">If you have any questions about this privacy policy, please contact us:</p>
+                <div class="glass-card p-4 rounded-lg">
+                    <p class="text-gray-300"><strong>Email</strong>: <a href="mailto:hao131462@qq.com" class="text-primary hover:underline">hao131462@qq.com</a></p>
+                    <p class="text-gray-300 mt-2"><strong>GitHub</strong>: <a href="https://github.com/wh131462" target="_blank" class="text-primary hover:underline">https://github.com/wh131462</a></p>
+                </div>
+            </section>
+            </div>
         </article>
     </main>
 
     <!-- Footer -->
     <footer class="py-8 border-t border-gray-800">
         <div class="max-w-4xl mx-auto px-4 text-center text-gray-500 text-sm">
-            <p>&copy; 2025 Video Companion. All rights reserved.</p>
+            <p data-i18n-html="footer.copyright">&copy; 2025 Video Companion. All rights reserved.</p>
         </div>
     </footer>
+    <!-- i18n Scripts -->
+    <script src="./assets/js/i18n/zh-CN.js"></script>
+    <script src="./assets/js/i18n/en.js"></script>
+    <script src="./assets/js/i18n.js"></script>
 </body>
 </html>

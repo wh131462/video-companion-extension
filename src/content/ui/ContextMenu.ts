@@ -4,6 +4,7 @@
 
 import { formatSpeed } from '@shared/utils';
 import { SPEED_OPTIONS } from '@shared/constants';
+import { t } from '@shared/i18n';
 import { showToast } from './Toast';
 import { Icons } from './Icons';
 import {
@@ -85,7 +86,7 @@ export class ContextMenu {
     // 显示控制面板选项
     if (this.options.onShowPanel) {
       items.push({
-        label: '控制面板',
+        label: t('menuControlPanel'),
         icon: Icons.showControls,
         checked: isPanelVisible,
         onClick: () => this.handleShowPanel(),
@@ -95,7 +96,7 @@ export class ContextMenu {
 
     // 播放/暂停
     items.push({
-      label: this.video.paused ? '播放' : '暂停',
+      label: this.video.paused ? t('btnPlay') : t('btnPause'),
       icon: this.video.paused ? Icons.play : Icons.pause,
       onClick: () => this.handlePlayPause(),
     });
@@ -103,7 +104,7 @@ export class ContextMenu {
 
     items.push(
       {
-        label: `倍速: ${formatSpeed(currentSpeed)}`,
+        label: t('menuSpeedLabel', formatSpeed(currentSpeed)),
         icon: Icons.speed,
         submenu: SPEED_OPTIONS.map((speed: number) => ({
           label: formatSpeed(speed),
@@ -113,36 +114,36 @@ export class ContextMenu {
       },
       { divider: true },
       {
-        label: '循环播放',
+        label: t('menuLoopPlay'),
         icon: Icons.loop,
         checked: isLooping,
         onClick: () => this.handleLoop(),
       },
       {
-        label: '静音',
+        label: t('btnMute'),
         icon: isMuted ? Icons.mute : Icons.volume,
         checked: isMuted,
         onClick: () => this.handleMute(),
       },
       { divider: true },
       {
-        label: '画中画',
+        label: t('btnPip'),
         icon: Icons.pip,
         onClick: () => this.handlePiP(),
       },
       {
-        label: isFullscreen ? '退出全屏' : '全屏',
+        label: isFullscreen ? t('btnExitFullscreen') : t('btnFullscreen'),
         icon: Icons.fullscreen,
         onClick: () => this.handleFullscreen(),
       },
       {
-        label: '网页全屏',
+        label: t('btnWebFullscreen'),
         icon: Icons.webFullscreen,
         onClick: () => this.handleWebFullscreen(),
       },
       { divider: true },
       {
-        label: '截图',
+        label: t('btnScreenshot'),
         icon: Icons.screenshot,
         onClick: () => this.handleScreenshot(),
       }
@@ -152,7 +153,7 @@ export class ContextMenu {
     const m3u8Sources = m3u8SourceCollector.getSources();
     if (m3u8Sources.length > 1) {
       items.push({
-        label: '下载视频',
+        label: t('menuDownloadVideo'),
         icon: Icons.download,
         submenu: m3u8Sources.map((source) => ({
           label: this.truncateUrl(source.url, 40),
@@ -161,7 +162,7 @@ export class ContextMenu {
       });
     } else {
       items.push({
-        label: '下载视频',
+        label: t('menuDownloadVideo'),
         icon: Icons.download,
         onClick: () => this.handleDownload(),
       });
@@ -171,7 +172,7 @@ export class ContextMenu {
     items.push(
       { divider: true },
       {
-        label: '通过链接播放',
+        label: t('btnLinkPlay'),
         icon: Icons.linkPlay,
         onClick: () => this.handlePlayM3u8(),
       }
@@ -344,7 +345,7 @@ export class ContextMenu {
 
   private handleSpeedChange(speed: number): void {
     playbackSpeed.setSpeed(this.video, speed);
-    showToast(`播放速度: ${formatSpeed(speed)}`);
+    showToast(t('toastSpeed', formatSpeed(speed)));
   }
 
   private handlePiP(): void {
@@ -361,7 +362,7 @@ export class ContextMenu {
 
   private handleWebFullscreen(): void {
     const isActive = webFullscreen.toggle(this.video);
-    showToast(isActive ? '已进入网页全屏' : '已退出网页全屏');
+    showToast(isActive ? t('toastEnteredWebFs') : t('toastLeftWebFs'));
   }
 
   private handleDownload(): void {
@@ -374,38 +375,38 @@ export class ContextMenu {
       }
 
       download.download(this.video);
-      showToast('开始下载视频');
+      showToast(t('toastDownloadStarted'));
     } catch (error) {
-      showToast(error instanceof Error ? error.message : '下载失败');
+      showToast(error instanceof Error ? error.message : t('toastDownloadFailed'));
     }
   }
 
   private handleScreenshot(): void {
     try {
       screenshot.capture(this.video);
-      showToast('截图已保存');
+      showToast(t('toastScreenshotSaved'));
     } catch (error) {
-      showToast(error instanceof Error ? error.message : '截图失败');
+      showToast(error instanceof Error ? error.message : t('toastScreenshotFailed'));
     }
   }
 
   private handleLoop(): void {
     const isActive = loop.toggle(this.video);
-    showToast(isActive ? '循环播放已开启' : '循环播放已关闭');
+    showToast(isActive ? t('toastLoopOn') : t('toastLoopOff'));
   }
 
   private handleMute(): void {
     const isMuted = mute.toggle(this.video);
-    showToast(isMuted ? '已静音' : '已取消静音');
+    showToast(isMuted ? t('toastMuted') : t('toastUnmuted'));
   }
 
   private handlePlayPause(): void {
     if (this.video.paused) {
       this.video.play();
-      showToast('播放');
+      showToast(t('btnPlay'));
     } else {
       this.video.pause();
-      showToast('暂停');
+      showToast(t('btnPause'));
     }
   }
 

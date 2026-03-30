@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Video Companion",
-  "version": "1.2.4",
-  "description": "网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏，支持 YouTube/B站/腾讯视频等主流平台",
+  "name": "__MSG_extName__",
+  "version": "1.2.5",
+  "description": "__MSG_extDescription__",
+  "default_locale": "zh_CN",
   "minimum_chrome_version": "122",
   "permissions": [
     "activeTab",
@@ -69,28 +70,28 @@
         "default": "Alt+P",
         "mac": "Alt+P"
       },
-      "description": "切换画中画模式"
+      "description": "__MSG_cmdTogglePip__"
     },
     "toggle-fullscreen": {
       "suggested_key": {
         "default": "Alt+Shift+F",
         "mac": "Alt+Shift+F"
       },
-      "description": "切换全屏模式"
+      "description": "__MSG_cmdToggleFullscreen__"
     },
     "speed-up": {
       "suggested_key": {
         "default": "Alt+Shift+Period",
         "mac": "Alt+Shift+Period"
       },
-      "description": "加速播放"
+      "description": "__MSG_cmdSpeedUp__"
     },
     "speed-down": {
       "suggested_key": {
         "default": "Alt+Shift+Comma",
         "mac": "Alt+Shift+Comma"
       },
-      "description": "减速播放"
+      "description": "__MSG_cmdSpeedDown__"
     }
   }
 }

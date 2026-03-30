@@ -4,6 +4,7 @@
 
 import { CSS_CLASSES, PANEL_HIDE_DELAY } from '@shared/constants';
 import { formatSpeed } from '@shared/utils';
+import { t } from '@shared/i18n';
 import { SpeedMenu } from './SpeedMenu';
 import { Draggable } from './Draggable';
 import { showToast } from './Toast';
@@ -114,7 +115,7 @@ export class ControlPanel {
     const closeButton = document.createElement('button');
     closeButton.className = 'vc-close-btn';
     closeButton.innerHTML = Icons.close;
-    closeButton.title = '关闭面板';
+    closeButton.title = t('btnClosePanel');
     closeButton.addEventListener('click', (e) => {
       e.stopPropagation();
       this.close();
@@ -136,7 +137,7 @@ export class ControlPanel {
     speedWrapper.className = 'vc-speed-wrapper';
     this.speedButton = this.createButton({
       icon: formatSpeed(this.video.playbackRate),
-      title: '倍速',
+      title: t('btnSpeed'),
       onClick: () => this.speedMenu.toggle(),
       className: CSS_CLASSES.speedButton,
     });
@@ -147,7 +148,7 @@ export class ControlPanel {
     // 2. 循环按钮
     this.loopButton = this.createButton({
       icon: Icons.loop,
-      title: '循环',
+      title: t('btnLoop'),
       onClick: () => this.handleLoop(),
     });
     if (this.video.loop) {
@@ -158,28 +159,28 @@ export class ControlPanel {
     // 3. 画中画按钮
     buttonContainer.appendChild(this.createButton({
       icon: Icons.pip,
-      title: '画中画',
+      title: t('btnPip'),
       onClick: () => this.handlePiP(),
     }));
 
     // 4. 全屏按钮
     buttonContainer.appendChild(this.createButton({
       icon: Icons.fullscreen,
-      title: '全屏',
+      title: t('btnFullscreen'),
       onClick: () => this.handleFullscreen(),
     }));
 
     // 5. 网页全屏按钮
     buttonContainer.appendChild(this.createButton({
       icon: Icons.webFullscreen,
-      title: '网页全屏',
+      title: t('btnWebFullscreen'),
       onClick: () => this.handleWebFullscreen(),
     }));
 
     // 6. 静音按钮
     this.muteButton = this.createButton({
       icon: this.video.muted ? Icons.mute : Icons.volume,
-      title: '静音',
+      title: t('btnMute'),
       onClick: () => this.handleMute(),
     });
     buttonContainer.appendChild(this.muteButton);
@@ -187,14 +188,14 @@ export class ControlPanel {
     // 7. 截图按钮
     buttonContainer.appendChild(this.createButton({
       icon: Icons.screenshot,
-      title: '截图',
+      title: t('btnScreenshot'),
       onClick: () => this.handleScreenshot(),
     }));
 
     // 8. 下载按钮
     this.downloadButton = this.createButton({
       icon: Icons.download,
-      title: '下载',
+      title: t('btnDownload'),
       onClick: () => this.handleDownload(),
     });
     buttonContainer.appendChild(this.downloadButton);
@@ -202,14 +203,14 @@ export class ControlPanel {
     // 9. 通过链接播放按钮
     buttonContainer.appendChild(this.createButton({
       icon: Icons.linkPlay,
-      title: '通过链接播放',
+      title: t('btnLinkPlay'),
       onClick: () => this.handleHls(),
     }));
 
     // 10. 隐藏原生控制器按钮
     this.hideControlsButton = this.createButton({
       icon: this.video.controls ? Icons.showControls : Icons.hideControls,
-      title: '隐藏控制器',
+      title: t('btnHideControls'),
       onClick: () => this.handleHideControls(),
     });
     buttonContainer.appendChild(this.hideControlsButton);
@@ -269,7 +270,7 @@ export class ControlPanel {
     const rewindBtn = document.createElement('button');
     rewindBtn.className = 'vc-playback-btn';
     rewindBtn.innerHTML = Icons.rewind;
-    rewindBtn.title = '快退 10 秒';
+    rewindBtn.title = t('btnRewind');
     rewindBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.video.currentTime = Math.max(0, this.video.currentTime - 10);
@@ -279,7 +280,7 @@ export class ControlPanel {
     this.playPauseBtn = document.createElement('button');
     this.playPauseBtn.className = 'vc-playback-btn vc-play-pause';
     this.playPauseBtn.innerHTML = this.video.paused ? Icons.play : Icons.pause;
-    this.playPauseBtn.title = '播放/暂停';
+    this.playPauseBtn.title = t('btnPlayPause');
     this.playPauseBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (this.video.paused) {
@@ -293,7 +294,7 @@ export class ControlPanel {
     const forwardBtn = document.createElement('button');
     forwardBtn.className = 'vc-playback-btn';
     forwardBtn.innerHTML = Icons.forward;
-    forwardBtn.title = '快进 10 秒';
+    forwardBtn.title = t('btnForward');
     forwardBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       this.video.currentTime = Math.min(this.video.duration, this.video.currentTime + 10);
@@ -355,11 +356,11 @@ export class ControlPanel {
   private setupEventListeners(): void {
     // 视频事件
     this.video.addEventListener('enterpictureinpicture', () => {
-      showToast('已进入画中画模式');
+      showToast(t('toastEnteredPip'));
     });
 
     this.video.addEventListener('leavepictureinpicture', () => {
-      showToast('已退出画中画模式');
+      showToast(t('toastLeftPip'));
     });
 
     // 进度条事件
@@ -546,15 +547,14 @@ export class ControlPanel {
 
   private handleWebFullscreen(): void {
     const isActive = webFullscreen.toggle(this.video);
-    showToast(isActive ? '已进入网页全屏' : '已退出网页全屏');
-  }
+    showToast(isActive ? t('toastEnteredWebFs') : t('toastLeftWebFs'));  }
 
   private handleSpeedChange(speed: number): void {
     playbackSpeed.setSpeed(this.video, speed);
     if (this.speedButton) {
       this.speedButton.innerHTML = formatSpeed(speed);
     }
-    showToast(`播放速度: ${formatSpeed(speed)}`);
+    showToast(t('toastSpeed', formatSpeed(speed)));
   }
 
   private handleDownload(): void {
@@ -567,9 +567,9 @@ export class ControlPanel {
       }
 
       download.download(this.video);
-      showToast('开始下载视频');
+      showToast(t('toastDownloadStarted'));
     } catch (error) {
-      showToast(error instanceof Error ? error.message : '下载失败');
+      showToast(error instanceof Error ? error.message : t('toastDownloadFailed'));
     }
   }
 
@@ -585,7 +585,7 @@ export class ControlPanel {
           if (tooltip) this.downloadButton.appendChild(tooltip);
           break;
         case 'transmuxing':
-          this.downloadButton.innerHTML = `<span style="font-size:10px;position:relative;z-index:1">转码中</span>`;
+          this.downloadButton.innerHTML = `<span style="font-size:10px;position:relative;z-index:1">${t('hlsTransmuxing')}</span>`;
           if (tooltip) this.downloadButton.appendChild(tooltip);
           break;
         case 'error':
@@ -620,16 +620,16 @@ export class ControlPanel {
   private handleScreenshot(): void {
     try {
       screenshot.capture(this.video);
-      showToast('截图已保存');
+      showToast(t('toastScreenshotSaved'));
     } catch (error) {
-      showToast(error instanceof Error ? error.message : '截图失败');
+      showToast(error instanceof Error ? error.message : t('toastScreenshotFailed'));
     }
   }
 
   private handleLoop(): void {
     const isActive = loop.toggle(this.video);
     this.loopButton?.classList.toggle(CSS_CLASSES.active, isActive);
-    showToast(isActive ? '循环播放已开启' : '循环播放已关闭');
+    showToast(isActive ? t('toastLoopOn') : t('toastLoopOff'));
   }
 
   private handleMute(): void {
@@ -641,7 +641,7 @@ export class ControlPanel {
       }
     }
     this.updateVolumeDisplay();
-    showToast(isMuted ? '已静音' : '已取消静音');
+    showToast(isMuted ? t('toastMuted') : t('toastUnmuted'));
   }
 
   private handleHideControls(): void {
@@ -666,7 +666,7 @@ export class ControlPanel {
       }
     }
 
-    showToast(isHidden ? '已隐藏原生控制器' : '已显示原生控制器');
+    showToast(isHidden ? t('toastControlsHidden') : t('toastControlsShown'));
   }
 
   show(): void {
@@ -707,7 +707,7 @@ export class ControlPanel {
     this.element.style.display = 'none';
     // 通知 VideoEnhancer 记录此面板已关闭
     this.onClose?.();
-    showToast('面板已关闭，刷新页面可恢复');
+    showToast(t('toastPanelClosed'));
   }
 
   destroy(): void {

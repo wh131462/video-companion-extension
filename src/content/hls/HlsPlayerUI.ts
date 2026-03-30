@@ -10,6 +10,7 @@ import { hlsContentDownloader, type M3u8Variant } from './HlsContentDownloader';
 import { showToast } from '../ui/Toast';
 import { SPEED_OPTIONS, Z_INDEX } from '@shared/constants';
 import { generateFileName } from '@shared/utils';
+import { t } from '@shared/i18n';
 
 const M3U8_URL_PATTERN = /\.m3u8(\?|#|$)/i;
 
@@ -710,7 +711,7 @@ export class HlsPlayerUI {
     dialog.className = 'dialog';
 
     const title = document.createElement('h3');
-    title.textContent = '视频播放器';
+    title.textContent = t('hlsDialogTitle');
     dialog.appendChild(title);
 
     const closeBtn = document.createElement('button');
@@ -723,10 +724,10 @@ export class HlsPlayerUI {
     inputRow.className = 'input-row';
     const input = document.createElement('input');
     input.type = 'text';
-    input.placeholder = '粘贴视频链接（m3u8、mp4、webm...）';
+    input.placeholder = t('hlsInputPlaceholder');
     const playBtn = document.createElement('button');
     playBtn.className = 'play-btn';
-    playBtn.textContent = '播放';
+    playBtn.textContent = t('btnPlay');
     const doPlay = () => { const u = input.value.trim(); if (u) this.playUrl(u); };
     playBtn.addEventListener('click', doPlay);
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doPlay(); });
@@ -743,7 +744,7 @@ export class HlsPlayerUI {
     if (m3u8Sources.length > 0) {
       const lt = document.createElement('div');
       lt.className = 'list-title';
-      lt.textContent = `流媒体源 (${m3u8Sources.length})`;
+      lt.textContent = t('hlsStreamSources', String(m3u8Sources.length));
       scrollArea.appendChild(lt);
 
       const list = document.createElement('div');
@@ -759,7 +760,7 @@ export class HlsPlayerUI {
     if (videoSources.length > 0) {
       const lt = document.createElement('div');
       lt.className = 'list-title';
-      lt.textContent = `页面视频 (${videoSources.length})`;
+      lt.textContent = t('hlsPageVideos', String(videoSources.length));
       scrollArea.appendChild(lt);
 
       const list = document.createElement('div');
@@ -929,9 +930,9 @@ export class HlsPlayerUI {
         await video.play().catch(() => {});
       }
       loading.remove();
-      showToast('视频加载成功');
+      showToast(t('toastVideoLoaded'));
     } catch (err) {
-      showToast(err instanceof Error ? err.message : '视频播放失败');
+      showToast(err instanceof Error ? err.message : t('toastVideoFailed'));
     }
   }
 
@@ -1124,8 +1125,8 @@ export class HlsPlayerUI {
         a.href = cv.toDataURL('image/png');
         a.download = `hls-screenshot-${Date.now()}.png`;
         a.click();
-        showToast('截图已保存');
-      } catch { showToast('截图失败'); }
+        showToast(t('toastScreenshotSaved'));
+      } catch { showToast(t('toastScreenshotFailed')); }
     });
 
     // -- 下载 --
@@ -1142,13 +1143,13 @@ export class HlsPlayerUI {
       try {
         if (document.pictureInPictureElement === video) await document.exitPictureInPicture();
         else await video.requestPictureInPicture();
-      } catch { showToast('画中画不可用'); }
+      } catch { showToast(t('toastPipUnavailable')); }
     });
 
     // -- 全屏 --
     c.btnFs.addEventListener('click', () => {
       if (document.fullscreenElement) document.exitFullscreen();
-      else c.pw.requestFullscreen().catch(() => showToast('全屏不可用'));
+      else c.pw.requestFullscreen().catch(() => showToast(t('toastFsUnavailable')));
     });
     const syncFsIcon = () => {
       c.btnFs.innerHTML = document.fullscreenElement ? SVG.exitFullscreen : SVG.fullscreen;
@@ -1247,12 +1248,12 @@ export class HlsPlayerUI {
 
     const pBtn = document.createElement('button');
     pBtn.className = 'action-btn';
-    pBtn.textContent = '播放';
+    pBtn.textContent = t('btnPlay');
     pBtn.addEventListener('click', () => this.playUrl(url));
 
     const dBtn = document.createElement('button');
     dBtn.className = 'action-btn download';
-    dBtn.textContent = '下载';
+    dBtn.textContent = t('btnDownload');
     dBtn.addEventListener('click', () => {
       if (isM3u8) {
         this.startDownloadWithProgress(dBtn, url);
@@ -1263,11 +1264,11 @@ export class HlsPlayerUI {
 
     const copyBtn = document.createElement('button');
     copyBtn.className = 'action-btn';
-    copyBtn.textContent = '复制';
+    copyBtn.textContent = t('btnCopy');
     copyBtn.addEventListener('click', () => {
       navigator.clipboard.writeText(url).then(
-        () => showToast('已复制链接'),
-        () => showToast('复制失败')
+        () => showToast(t('toastCopied')),
+        () => showToast(t('toastCopyFailed'))
       );
     });
 
@@ -1286,19 +1287,19 @@ export class HlsPlayerUI {
     const ext = url.match(/\.(mp4|webm|ogg|mkv|avi|mov)/i)?.[1] || 'mp4';
     link.download = generateFileName('video', ext);
     link.click();
-    showToast('开始下载视频');
+    showToast(t('toastDownloadStarted'));
   }
 
   private startDownloadWithProgress(btn: HTMLButtonElement, url: string): void {
     if (hlsContentDownloader.isDownloading) {
-      showToast('已有下载任务进行中');
+      showToast(t('toastDownloading'));
       return;
     }
     const originalContent = btn.innerHTML;
     const isActionBtn = btn.classList.contains('action-btn');
     btn.disabled = true;
     if (isActionBtn) {
-      btn.textContent = '解析中...';
+      btn.textContent = t('hlsParsing');
     }
 
     // 先检测是否有多个质量可选
@@ -1306,7 +1307,7 @@ export class HlsPlayerUI {
       if (variants.length > 1) {
         // 弹出质量选择
         btn.disabled = false;
-        if (isActionBtn) btn.textContent = '下载';
+        if (isActionBtn) btn.textContent = t('btnDownload');
         else btn.innerHTML = originalContent;
         this.showQualityPicker(btn, url, variants);
       } else {
@@ -1327,7 +1328,7 @@ export class HlsPlayerUI {
     variant?: M3u8Variant
   ): void {
     btn.disabled = true;
-    if (isActionBtn) btn.textContent = '准备中...';
+    if (isActionBtn) btn.textContent = t('hlsPreparing');
 
     const unsubscribe = hlsContentDownloader.onStateChange((state) => {
       switch (state.status) {
@@ -1340,15 +1341,15 @@ export class HlsPlayerUI {
           break;
         case 'transmuxing':
           if (isActionBtn) {
-            btn.textContent = '转码中';
+            btn.textContent = t('hlsTransmuxing');
           } else {
-            btn.innerHTML = `<span style="font-size:10px;color:#fff">转码中</span>`;
+            btn.innerHTML = `<span style="font-size:10px;color:#fff">${t('hlsTransmuxing')}</span>`;
           }
           break;
         case 'error':
           btn.disabled = false;
           if (isActionBtn) {
-            btn.textContent = '重试';
+            btn.textContent = t('btnRetry');
           } else {
             btn.innerHTML = SVG.retry;
           }
@@ -1386,7 +1387,7 @@ export class HlsPlayerUI {
     dialog.className = 'quality-dialog';
 
     const title = document.createElement('h3');
-    title.textContent = '选择下载质量';
+    title.textContent = t('hlsSelectQuality');
     dialog.appendChild(title);
 
     const list = document.createElement('div');
@@ -1403,7 +1404,7 @@ export class HlsPlayerUI {
       label.className = 'q-label';
       const res = v.resolution;
       const height = res ? res.split('x')[1] : null;
-      label.textContent = height ? `${height}p` : `变体 ${i + 1}`;
+      label.textContent = height ? `${height}p` : t('hlsVariant', String(i + 1));
 
       const bw = document.createElement('span');
       bw.className = 'q-bw';
@@ -1427,12 +1428,12 @@ export class HlsPlayerUI {
 
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'q-cancel';
-    cancelBtn.textContent = '取消';
+    cancelBtn.textContent = t('btnCancel');
     cancelBtn.addEventListener('click', () => overlay.remove());
 
     const confirmBtn = document.createElement('button');
     confirmBtn.className = 'q-confirm';
-    confirmBtn.textContent = '开始下载';
+    confirmBtn.textContent = t('btnStartDownload');
     confirmBtn.addEventListener('click', () => {
       overlay.remove();
       const originalContent = btn.innerHTML;

@@ -5,18 +5,19 @@
 import { storageService } from './services/storage';
 import { setupMessageHandler, broadcastSettingsChange, broadcastExtensionState } from './handlers/message';
 import { setupCommandHandler } from './handlers/command';
+import { t } from '@shared/i18n';
 
 // 更新扩展图标状态
 async function updateIconState(enabled: boolean): Promise<void> {
   if (enabled) {
     // 启用状态：清除 badge，恢复标题
     await chrome.action.setBadgeText({ text: '' });
-    await chrome.action.setTitle({ title: 'Video Companion - 点击禁用' });
+    await chrome.action.setTitle({ title: t('bgClickToDisable') });
   } else {
     // 禁用状态：显示 OFF badge，更新标题
     await chrome.action.setBadgeText({ text: 'OFF' });
     await chrome.action.setBadgeBackgroundColor({ color: '#666666' });
-    await chrome.action.setTitle({ title: 'Video Companion - 点击启用' });
+    await chrome.action.setTitle({ title: t('bgClickToEnable') });
   }
 }
 
@@ -42,7 +43,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   // 创建浏览器右键菜单
   chrome.contextMenus.create({
     id: 'vc-play-by-link',
-    title: '通过链接播放',
+    title: t('bgPlayByLink'),
     contexts: ['page', 'video', 'link'],
   });
 });
@@ -58,7 +59,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         type: 'basic',
         iconUrl: 'public/icons/icon128.png',
         title: 'Video Companion',
-        message: '当前页面不支持此功能，请在普通网页上使用',
+        message: t('bgNotSupported'),
       });
     }
   }

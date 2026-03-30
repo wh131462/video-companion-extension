@@ -1,0 +1,279 @@
+{
+  "extName": {
+    "message": "Video Companion"
+  },
+  "extDescription": {
+    "message": "网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏，支持 YouTube/B站/腾讯视频等主流平台"
+  },
+
+  "cmdTogglePip": {
+    "message": "切换画中画模式"
+  },
+  "cmdToggleFullscreen": {
+    "message": "切换全屏模式"
+  },
+  "cmdSpeedUp": {
+    "message": "加速播放"
+  },
+  "cmdSpeedDown": {
+    "message": "减速播放"
+  },
+
+  "btnSpeed": {
+    "message": "倍速"
+  },
+  "btnLoop": {
+    "message": "循环"
+  },
+  "btnPip": {
+    "message": "画中画"
+  },
+  "btnFullscreen": {
+    "message": "全屏"
+  },
+  "btnExitFullscreen": {
+    "message": "退出全屏"
+  },
+  "btnWebFullscreen": {
+    "message": "网页全屏"
+  },
+  "btnMute": {
+    "message": "静音"
+  },
+  "btnScreenshot": {
+    "message": "截图"
+  },
+  "btnDownload": {
+    "message": "下载"
+  },
+  "btnLinkPlay": {
+    "message": "通过链接播放"
+  },
+  "btnHideControls": {
+    "message": "隐藏��制器"
+  },
+  "btnClosePanel": {
+    "message": "关闭面板"
+  },
+  "btnRewind": {
+    "message": "快退 10 秒"
+  },
+  "btnForward": {
+    "message": "快进 10 秒"
+  },
+  "btnPlayPause": {
+    "message": "播放/暂停"
+  },
+  "btnPlay": {
+    "message": "播放"
+  },
+  "btnPause": {
+    "message": "暂停"
+  },
+  "btnCopy": {
+    "message": "复制"
+  },
+  "btnCancel": {
+    "message": "取消"
+  },
+  "btnStartDownload": {
+    "message": "开始下载"
+  },
+  "btnRetry": {
+    "message": "重试"
+  },
+
+  "toastEnteredPip": {
+    "message": "已进入画中画模式"
+  },
+  "toastLeftPip": {
+    "message": "已退出画中画模式"
+  },
+  "toastEnteredWebFs": {
+    "message": "已进入网页全屏"
+  },
+  "toastLeftWebFs": {
+    "message": "已退出网页全屏"
+  },
+  "toastSpeed": {
+    "message": "播放速度: $SPEED$",
+    "placeholders": {
+      "SPEED": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastScreenshotSaved": {
+    "message": "截图已保存"
+  },
+  "toastScreenshotFailed": {
+    "message": "截图失败"
+  },
+  "toastDownloadStarted": {
+    "message": "开始下载视频"
+  },
+  "toastDownloadFailed": {
+    "message": "下载失败"
+  },
+  "toastLoopOn": {
+    "message": "循环播放已开启"
+  },
+  "toastLoopOff": {
+    "message": "循环播放已关闭"
+  },
+  "toastMuted": {
+    "message": "已静音"
+  },
+  "toastUnmuted": {
+    "message": "已取消静音"
+  },
+  "toastControlsHidden": {
+    "message": "已隐藏原生控制器"
+  },
+  "toastControlsShown": {
+    "message": "已显示原生控制器"
+  },
+  "toastPanelClosed": {
+    "message": "面板已关闭，刷新页面可恢复"
+  },
+  "toastEnabled": {
+    "message": "Video Companion 已启用"
+  },
+  "toastDisabled": {
+    "message": "Video Companion 已禁用"
+  },
+  "toastVideoLoaded": {
+    "message": "视频加载成功"
+  },
+  "toastVideoFailed": {
+    "message": "视频播放失败"
+  },
+  "toastPipUnavailable": {
+    "message": "画中画不可用"
+  },
+  "toastFsUnavailable": {
+    "message": "全屏不可用"
+  },
+  "toastCopied": {
+    "message": "已复制链接"
+  },
+  "toastCopyFailed": {
+    "message": "复制失败"
+  },
+  "toastDownloading": {
+    "message": "已有下载任务进行中"
+  },
+
+  "popupControlPanel": {
+    "message": "控制面板"
+  },
+  "popupControlPanelDesc": {
+    "message": "视频底部悬浮面板"
+  },
+  "popupContextMenu": {
+    "message": "右键菜单"
+  },
+  "popupContextMenuDesc": {
+    "message": "视频增强右键菜单"
+  },
+  "popupDetecting": {
+    "message": "检测中..."
+  },
+  "popupClickToPlay": {
+    "message": "点击通过链接播放"
+  },
+  "popupNoPageInfo": {
+    "message": "无法获取页面信息"
+  },
+  "popupNoVideo": {
+    "message": "当前页面没有视频"
+  },
+  "popupVideoCount": {
+    "message": "检测到 $COUNT$ 个视频",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupOpenPlayer": {
+    "message": "点击打开视频播放器"
+  },
+  "popupSwitchLanguage": {
+    "message": "切换语言"
+  },
+
+  "bgClickToDisable": {
+    "message": "Video Companion - 点击禁用"
+  },
+  "bgClickToEnable": {
+    "message": "Video Companion - 点击启用"
+  },
+  "bgPlayByLink": {
+    "message": "通过链接播放"
+  },
+  "bgNotSupported": {
+    "message": "当前页面不支持此功能，请在普通网页上使用"
+  },
+
+  "hlsDialogTitle": {
+    "message": "视频播放器"
+  },
+  "hlsInputPlaceholder": {
+    "message": "粘贴视频链接（m3u8、mp4、webm...）"
+  },
+  "hlsStreamSources": {
+    "message": "流媒体源 ($COUNT$)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "hlsPageVideos": {
+    "message": "页面视频 ($COUNT$)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "hlsSelectQuality": {
+    "message": "选择下载质量"
+  },
+  "hlsVariant": {
+    "message": "变体 $NUM$",
+    "placeholders": {
+      "NUM": {
+        "content": "$1"
+      }
+    }
+  },
+  "hlsParsing": {
+    "message": "解析中..."
+  },
+  "hlsPreparing": {
+    "message": "准备中..."
+  },
+  "hlsTransmuxing": {
+    "message": "转码中"
+  },
+
+  "menuControlPanel": {
+    "message": "控制面板"
+  },
+  "menuSpeedLabel": {
+    "message": "倍速: $SPEED$",
+    "placeholders": {
+      "SPEED": {
+        "content": "$1"
+      }
+    }
+  },
+  "menuLoopPlay": {
+    "message": "循环播放"
+  },
+  "menuDownloadVideo": {
+    "message": "下载视频"
+  }
+}

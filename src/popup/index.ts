@@ -2,6 +2,8 @@
  * Video Companion - Popup 脚本
  */
 
+import { t, initLanguage, getLanguage, setLanguage } from '@shared/i18n';
+
 // 抑制开发模式下的 HMR WebSocket 错误（Chrome 扩展 popup 不支持 HMR）
 if (import.meta.env.DEV) {
   window.addEventListener('error', (e) => {
@@ -17,9 +19,27 @@ const panelToggle = document.getElementById('panel-toggle') as HTMLInputElement;
 const contextMenuToggle = document.getElementById('context-menu-toggle') as HTMLInputElement;
 const videoInfo = document.getElementById('video-info') as HTMLDivElement;
 const videoCount = document.getElementById('video-count') as HTMLSpanElement;
+const langToggle = document.getElementById('lang-toggle') as HTMLButtonElement;
+const langLabel = document.getElementById('lang-label') as HTMLSpanElement;
 
 // 初始化
 async function init(): Promise<void> {
+  // 初始化语言
+  await initLanguage();
+
+  // i18n: 替换 data-i18n 属性的元素文本
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n')!;
+    el.textContent = t(key);
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title')!;
+    (el as HTMLElement).title = t(key);
+  });
+
+  // 更新语言按钮文本
+  updateLanguageButton();
+
   // 显示版本号
   const manifest = chrome.runtime.getManifest();
   versionEl.textContent = `v${manifest.version}`;
@@ -42,7 +62,7 @@ async function updateVideoCount(): Promise<void> {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id) {
-      videoCount.textContent = '无法获取页面信息';
+      videoCount.textContent = t('popupNoPageInfo');
       videoInfo.classList.add('no-video');
       return;
     }
@@ -52,13 +72,19 @@ async function updateVideoCount(): Promise<void> {
     const total = response?.count ?? 0;
 
     if (total === 0) {
-      videoCount.textContent = '当前页面没有视频';
+      videoCount.textContent = t('popupNoVideo');
     } else {
-      videoCount.textContent = `检测到 ${total} 个视频`;
+      videoCount.textContent = t('popupVideoCount', String(total));
     }
   } catch {
-    videoCount.textContent = '当前页面没有视频';
+    videoCount.textContent = t('popupNoVideo');
   }
+}
+
+// 更新语言按钮文本
+function updateLanguageButton(): void {
+  const lang = getLanguage();
+  langLabel.textContent = lang === 'zh_CN' ? 'EN' : lang === 'en' ? '中文' : 'EN';
 }
 
 // 打开视频播放器
@@ -112,6 +138,39 @@ contextMenuToggle.addEventListener('change', async () => {
 // 视频信息区域 → 打开播放器
 videoInfo.addEventListener('click', () => {
   openVideoPlayer();
+});
+
+// 语言切换按钮
+langToggle.addEventListener('click', async () => {
+  const currentLang = getLanguage();
+  const nextLang = currentLang === 'zh_CN' ? 'en' : 'zh_CN';
+
+  // 保存语言设置
+  const { settings = {} } = await chrome.storage.local.get('settings');
+  await chrome.storage.local.set({
+    settings: { ...settings, language: nextLang },
+  });
+
+  // 更新当前语言
+  setLanguage(nextLang);
+
+  // 广播语言变更
+  const tabs = await chrome.tabs.query({});
+  for (const tab of tabs) {
+    if (tab.id) {
+      try {
+        await chrome.tabs.sendMessage(tab.id, {
+          action: 'settingsChanged',
+          settings: { language: nextLang },
+        });
+      } catch {
+        // 忽略无法连接的标签页
+      }
+    }
+  }
+
+  // 刷新 popup UI
+  init();
 });
 
 // 初始化

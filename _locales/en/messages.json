@@ -1,0 +1,279 @@
+{
+  "extName": {
+    "message": "Video Companion"
+  },
+  "extDescription": {
+    "message": "Web video enhancer - PiP, speed control (0.25x-16x), screenshot, download, web fullscreen. Supports YouTube, Bilibili, Tencent Video and more."
+  },
+
+  "cmdTogglePip": {
+    "message": "Toggle Picture-in-Picture"
+  },
+  "cmdToggleFullscreen": {
+    "message": "Toggle Fullscreen"
+  },
+  "cmdSpeedUp": {
+    "message": "Speed Up"
+  },
+  "cmdSpeedDown": {
+    "message": "Speed Down"
+  },
+
+  "btnSpeed": {
+    "message": "Speed"
+  },
+  "btnLoop": {
+    "message": "Loop"
+  },
+  "btnPip": {
+    "message": "PiP"
+  },
+  "btnFullscreen": {
+    "message": "Fullscreen"
+  },
+  "btnExitFullscreen": {
+    "message": "Exit Fullscreen"
+  },
+  "btnWebFullscreen": {
+    "message": "Web Fullscreen"
+  },
+  "btnMute": {
+    "message": "Mute"
+  },
+  "btnScreenshot": {
+    "message": "Screenshot"
+  },
+  "btnDownload": {
+    "message": "Download"
+  },
+  "btnLinkPlay": {
+    "message": "Play by Link"
+  },
+  "btnHideControls": {
+    "message": "Hide Controls"
+  },
+  "btnClosePanel": {
+    "message": "Close Panel"
+  },
+  "btnRewind": {
+    "message": "Rewind 10s"
+  },
+  "btnForward": {
+    "message": "Forward 10s"
+  },
+  "btnPlayPause": {
+    "message": "Play/Pause"
+  },
+  "btnPlay": {
+    "message": "Play"
+  },
+  "btnPause": {
+    "message": "Pause"
+  },
+  "btnCopy": {
+    "message": "Copy"
+  },
+  "btnCancel": {
+    "message": "Cancel"
+  },
+  "btnStartDownload": {
+    "message": "Start Download"
+  },
+  "btnRetry": {
+    "message": "Retry"
+  },
+
+  "toastEnteredPip": {
+    "message": "Entered Picture-in-Picture"
+  },
+  "toastLeftPip": {
+    "message": "Exited Picture-in-Picture"
+  },
+  "toastEnteredWebFs": {
+    "message": "Entered Web Fullscreen"
+  },
+  "toastLeftWebFs": {
+    "message": "Exited Web Fullscreen"
+  },
+  "toastSpeed": {
+    "message": "Playback Speed: $SPEED$",
+    "placeholders": {
+      "SPEED": {
+        "content": "$1"
+      }
+    }
+  },
+  "toastScreenshotSaved": {
+    "message": "Screenshot Saved"
+  },
+  "toastScreenshotFailed": {
+    "message": "Screenshot Failed"
+  },
+  "toastDownloadStarted": {
+    "message": "Download Started"
+  },
+  "toastDownloadFailed": {
+    "message": "Download Failed"
+  },
+  "toastLoopOn": {
+    "message": "Loop Enabled"
+  },
+  "toastLoopOff": {
+    "message": "Loop Disabled"
+  },
+  "toastMuted": {
+    "message": "Muted"
+  },
+  "toastUnmuted": {
+    "message": "Unmuted"
+  },
+  "toastControlsHidden": {
+    "message": "Native Controls Hidden"
+  },
+  "toastControlsShown": {
+    "message": "Native Controls Shown"
+  },
+  "toastPanelClosed": {
+    "message": "Panel closed. Refresh page to restore."
+  },
+  "toastEnabled": {
+    "message": "Video Companion Enabled"
+  },
+  "toastDisabled": {
+    "message": "Video Companion Disabled"
+  },
+  "toastVideoLoaded": {
+    "message": "Video Loaded Successfully"
+  },
+  "toastVideoFailed": {
+    "message": "Video Playback Failed"
+  },
+  "toastPipUnavailable": {
+    "message": "PiP Unavailable"
+  },
+  "toastFsUnavailable": {
+    "message": "Fullscreen Unavailable"
+  },
+  "toastCopied": {
+    "message": "Link Copied"
+  },
+  "toastCopyFailed": {
+    "message": "Copy Failed"
+  },
+  "toastDownloading": {
+    "message": "Download Already in Progress"
+  },
+
+  "popupControlPanel": {
+    "message": "Control Panel"
+  },
+  "popupControlPanelDesc": {
+    "message": "Floating panel at video bottom"
+  },
+  "popupContextMenu": {
+    "message": "Context Menu"
+  },
+  "popupContextMenuDesc": {
+    "message": "Video enhancement context menu"
+  },
+  "popupDetecting": {
+    "message": "Detecting..."
+  },
+  "popupClickToPlay": {
+    "message": "Click to play by link"
+  },
+  "popupNoPageInfo": {
+    "message": "Cannot get page info"
+  },
+  "popupNoVideo": {
+    "message": "No video on this page"
+  },
+  "popupVideoCount": {
+    "message": "$COUNT$ video(s) detected",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupOpenPlayer": {
+    "message": "Click to open video player"
+  },
+  "popupSwitchLanguage": {
+    "message": "Switch Language"
+  },
+
+  "bgClickToDisable": {
+    "message": "Video Companion - Click to Disable"
+  },
+  "bgClickToEnable": {
+    "message": "Video Companion - Click to Enable"
+  },
+  "bgPlayByLink": {
+    "message": "Play by Link"
+  },
+  "bgNotSupported": {
+    "message": "This feature is not supported on this page. Please use it on a regular webpage."
+  },
+
+  "hlsDialogTitle": {
+    "message": "Video Player"
+  },
+  "hlsInputPlaceholder": {
+    "message": "Paste video URL (m3u8, mp4, webm...)"
+  },
+  "hlsStreamSources": {
+    "message": "Stream Sources ($COUNT$)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "hlsPageVideos": {
+    "message": "Page Videos ($COUNT$)",
+    "placeholders": {
+      "COUNT": {
+        "content": "$1"
+      }
+    }
+  },
+  "hlsSelectQuality": {
+    "message": "Select Download Quality"
+  },
+  "hlsVariant": {
+    "message": "Variant $NUM$",
+    "placeholders": {
+      "NUM": {
+        "content": "$1"
+      }
+    }
+  },
+  "hlsParsing": {
+    "message": "Parsing..."
+  },
+  "hlsPreparing": {
+    "message": "Preparing..."
+  },
+  "hlsTransmuxing": {
+    "message": "Transmuxing"
+  },
+
+  "menuControlPanel": {
+    "message": "Control Panel"
+  },
+  "menuSpeedLabel": {
+    "message": "Speed: $SPEED$",
+    "placeholders": {
+      "SPEED": {
+        "content": "$1"
+      }
+    }
+  },
+  "menuLoopPlay": {
+    "message": "Loop"
+  },
+  "menuDownloadVideo": {
+    "message": "Download Video"
+  }
+}

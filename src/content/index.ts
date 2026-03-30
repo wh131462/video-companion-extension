@@ -6,6 +6,7 @@ import './styles/index.css';
 import type { UserSettings } from '@shared/types';
 import { DEFAULT_SETTINGS } from '@shared/constants';
 import { sendMessage } from '@shared/utils';
+import { initLanguage } from '@shared/i18n';
 import { extensionController } from './core/ExtensionController';
 import { setupMessageHandler } from './handlers/message';
 
@@ -18,6 +19,9 @@ async function init(): Promise<void> {
   try {
     // 加载用户设置
     const settings = await loadSettings();
+
+    // 初始化语言
+    await initLanguage();
 
     // 设置消息处理器（始终需要，用于接收启用/禁用消息）
     setupMessageHandler();

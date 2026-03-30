@@ -3,6 +3,7 @@
  */
 
 import { isInputElement } from '@shared/utils';
+import { t } from '@shared/i18n';
 import { videoEnhancer } from '../core/VideoEnhancer';
 import { showToast } from '../ui/Toast';
 import { pictureInPicture, fullscreen, playbackSpeed } from '../features';
@@ -46,7 +47,7 @@ function handleKeyDown(e: KeyboardEvent): void {
   if (key === '[') {
     e.preventDefault();
     const speed = playbackSpeed.decreaseSpeed(video);
-    showToast(`播放速度: ${speed.toFixed(2)}x`);
+    showToast(t('toastSpeed', `${speed.toFixed(2)}x`));
     videoEnhancer.getPanel(video)?.updateSpeedDisplay(speed);
     return;
   }
@@ -55,7 +56,7 @@ function handleKeyDown(e: KeyboardEvent): void {
   if (key === ']') {
     e.preventDefault();
     const speed = playbackSpeed.increaseSpeed(video);
-    showToast(`播放速度: ${speed.toFixed(2)}x`);
+    showToast(t('toastSpeed', `${speed.toFixed(2)}x`));
     videoEnhancer.getPanel(video)?.updateSpeedDisplay(speed);
     return;
   }
