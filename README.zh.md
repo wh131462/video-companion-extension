@@ -1,12 +1,23 @@
 # Video Companion
 
-**中文** | [English](README.en.md)
+**中文** | [English](README.md)
 
 > 网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏，支持 YouTube/B站/腾讯视频等主流平台
 
 [![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/nmkklhdipnadeimbnimllidjgccbifhm?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
 [![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/nmkklhdipnadeimbnimllidjgccbifhm?label=用户数&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
 [![License](https://img.shields.io/github/license/wh131462/video-companion-extension)](LICENSE)
+
+## 为什么选择 Video Companion？
+
+大多数视频平台只提供有限的播放控制。Video Companion 打破这些限制，把控制权交还给你：
+
+- **随心播放** — 讲座视频加速到 16 倍，教程慢放到 0.25 倍，精细调速找到你的最佳节奏。
+- **画中画多任务** — 将视频悬浮在浏览器之上，边看视频边工作、浏览网页或记笔记。
+- **一键保存** — 即时截取任意画面，或下载视频（包括 HLS/m3u8 流媒体）供离线观看。
+- **链接直播** — 粘贴 m3u8、mp4 或 webm 链接直接播放，无需额外软件。
+- **沉浸观看** — 网页全屏模式填满浏览器窗口而不进入系统全屏，还可隐藏原生控制栏获得更干净的画面。
+- **轻量无广告，尊重隐私** — 无需注册账号，不收集任何数据，没有广告。完全在浏览器本地运行。
 
 ## 截图预览
 
@@ -89,9 +100,6 @@
 | 功能 | 快捷键 |
 |------|--------|
 | 画中画 | `Alt + P` |
-| 全屏 | `Alt + Shift + F` |
-| 加速 | `Alt + Shift + >` |
-| 减速 | `Alt + Shift + <` |
 
 ## 安装
 

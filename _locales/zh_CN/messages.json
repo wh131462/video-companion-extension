@@ -3,22 +3,11 @@
     "message": "Video Companion"
   },
   "extDescription": {
-    "message": "网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏，支持 YouTube/B站/腾讯视频等主流平台"
+    "message": "网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏、通过链接播放视频（m3u8支持），支持 YouTube/B站/腾讯视频等主流平台"
   },
-
   "cmdTogglePip": {
     "message": "切换画中画模式"
   },
-  "cmdToggleFullscreen": {
-    "message": "切换全屏模式"
-  },
-  "cmdSpeedUp": {
-    "message": "加速播放"
-  },
-  "cmdSpeedDown": {
-    "message": "减速播放"
-  },
-
   "btnSpeed": {
     "message": "倍速"
   },
@@ -82,7 +71,6 @@
   "btnRetry": {
     "message": "重试"
   },
-
   "toastEnteredPip": {
     "message": "已进入画中画模式"
   },
@@ -163,7 +151,6 @@
   "toastDownloading": {
     "message": "已有下载任务进行中"
   },
-
   "popupControlPanel": {
     "message": "控制面板"
   },
@@ -202,7 +189,6 @@
   "popupSwitchLanguage": {
     "message": "切换语言"
   },
-
   "bgClickToDisable": {
     "message": "Video Companion - 点击禁用"
   },
@@ -215,7 +201,6 @@
   "bgNotSupported": {
     "message": "当前页面不支持此功能，请在普通网页上使用"
   },
-
   "hlsDialogTitle": {
     "message": "视频播放器"
   },
@@ -258,7 +243,6 @@
   "hlsTransmuxing": {
     "message": "转码中"
   },
-
   "menuControlPanel": {
     "message": "控制面板"
   },

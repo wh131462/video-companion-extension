@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "__MSG_extDescription__",
   "default_locale": "zh_CN",
   "minimum_chrome_version": "122",
@@ -71,27 +71,6 @@
         "mac": "Alt+P"
       },
       "description": "__MSG_cmdTogglePip__"
-    },
-    "toggle-fullscreen": {
-      "suggested_key": {
-        "default": "Alt+Shift+F",
-        "mac": "Alt+Shift+F"
-      },
-      "description": "__MSG_cmdToggleFullscreen__"
-    },
-    "speed-up": {
-      "suggested_key": {
-        "default": "Alt+Shift+Period",
-        "mac": "Alt+Shift+Period"
-      },
-      "description": "__MSG_cmdSpeedUp__"
-    },
-    "speed-down": {
-      "suggested_key": {
-        "default": "Alt+Shift+Comma",
-        "mac": "Alt+Shift+Comma"
-      },
-      "description": "__MSG_cmdSpeedDown__"
     }
   }
 }

@@ -3,20 +3,11 @@
     "message": "Video Companion"
   },
   "extDescription": {
-    "message": "Web video enhancer - PiP, speed control (0.25x-16x), screenshot, download, web fullscreen. Supports YouTube, Bilibili, Tencent Video and more."
+    "message": "Web video enhancer - PiP, speed control (0.25x-16x), screenshot, download, web fullscreen, play video by link (m3u8 supported). Supports YouTube, Bilibili, Tencent Video and more."
   },
 
   "cmdTogglePip": {
     "message": "Toggle Picture-in-Picture"
-  },
-  "cmdToggleFullscreen": {
-    "message": "Toggle Fullscreen"
-  },
-  "cmdSpeedUp": {
-    "message": "Speed Up"
-  },
-  "cmdSpeedDown": {
-    "message": "Speed Down"
   },
 
   "btnSpeed": {

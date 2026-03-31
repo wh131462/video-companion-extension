@@ -8,6 +8,17 @@
 [![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/nmkklhdipnadeimbnimllidjgccbifhm?label=Users&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
 [![License](https://img.shields.io/github/license/wh131462/video-companion-extension)](LICENSE)
 
+## Why Video Companion?
+
+Most video platforms lock you into their built-in player with limited controls. Video Companion breaks those limits and puts you in charge:
+
+- **Watch Your Way** — Speed up lectures to 16x, slow down tutorials to 0.25x, or find your perfect pace with fine-grained speed control.
+- **Multitask with Picture-in-Picture** — Pop any video out of the browser tab and keep watching while you work, browse, or take notes.
+- **Save What Matters** — Screenshot any frame instantly or download videos (including HLS/m3u8 streams) for offline viewing.
+- **Play Any Video Link** — Paste an m3u8, mp4, or webm URL and play it directly in the browser. No extra software needed.
+- **Distraction-Free Viewing** — Web fullscreen fills your browser without entering system fullscreen, and you can hide native controls for a cleaner experience.
+- **Lightweight & Privacy-Friendly** — No account required. No data collection. No ads. Runs entirely in your browser.
+
 ## Screenshots
 
 | Control Panel (Default) | Control Panel (Clean) |
@@ -88,9 +99,6 @@ Click extension icon in browser toolbar:
 | Feature | Shortcut |
 |------|--------|
 | Picture-in-Picture | `Alt + P` |
-| Fullscreen | `Alt + Shift + F` |
-| Speed Up | `Alt + Shift + >` |
-| Speed Down | `Alt + Shift + <` |
 
 ## Installation
 
