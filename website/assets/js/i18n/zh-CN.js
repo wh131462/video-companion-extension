@@ -32,7 +32,7 @@ window.I18N_ZHCN = {
   'feature.contextMenu': '右键菜单',
   'feature.contextMenuDesc': '快速操作入口',
   'feature.shortcuts': '快捷键',
-  'feature.shortcutsDesc': '键盘快速控制',
+  'feature.shortcutsDesc': 'Alt+P 画中画',
 
   // 截图
   'screenshots.title': '界面预览',
@@ -69,13 +69,11 @@ window.I18N_ZHCN = {
 
   // 快捷键
   'shortcuts.title': '快捷键',
-  'shortcuts.subtitle': '高效操控，无需鼠标',
+  'shortcuts.subtitle': '快速切换画中画模式',
   'shortcuts.thFeature': '功能',
   'shortcuts.thShortcut': '快捷键',
   'shortcuts.pip': '画中画',
-  'shortcuts.fullscreen': '全屏',
-  'shortcuts.speedUp': '加速播放',
-  'shortcuts.speedDown': '减速播放',
+  'shortcuts.customTip': '可在 Chrome 扩展快捷键设置中自定义（chrome://extensions/shortcuts）',
 
   // 页脚
   'footer.privacy': '隐私政策',

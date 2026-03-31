@@ -32,7 +32,7 @@ window.I18N_EN = {
   'feature.contextMenu': 'Context Menu',
   'feature.contextMenuDesc': 'Quick action entry',
   'feature.shortcuts': 'Shortcuts',
-  'feature.shortcutsDesc': 'Keyboard controls',
+  'feature.shortcutsDesc': 'Alt+P for PiP',
 
   // Screenshots
   'screenshots.title': 'Screenshots',
@@ -69,13 +69,11 @@ window.I18N_EN = {
 
   // Shortcuts
   'shortcuts.title': 'Keyboard Shortcuts',
-  'shortcuts.subtitle': 'Efficient control without a mouse',
+  'shortcuts.subtitle': 'Quick toggle Picture-in-Picture',
   'shortcuts.thFeature': 'Feature',
   'shortcuts.thShortcut': 'Shortcut',
   'shortcuts.pip': 'Picture-in-Picture',
-  'shortcuts.fullscreen': 'Fullscreen',
-  'shortcuts.speedUp': 'Speed Up',
-  'shortcuts.speedDown': 'Speed Down',
+  'shortcuts.customTip': 'Customizable in Chrome extension shortcuts settings (chrome://extensions/shortcuts)',
 
   // Footer
   'footer.privacy': 'Privacy Policy',
