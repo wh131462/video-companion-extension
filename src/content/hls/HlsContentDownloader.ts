@@ -68,7 +68,7 @@ export class HlsContentDownloader {
 
   async download(m3u8Url: string, selectedVariant?: M3u8Variant): Promise<void> {
     if (this._downloading) {
-      showToast('已有下载任务进行中');
+      showToast('已有保存任务进行中');
       return;
     }
     this._downloading = true;
@@ -86,7 +86,7 @@ export class HlsContentDownloader {
       if (variants.length > 0) {
         const chosen = selectedVariant ?? variants.sort((a, b) => b.bandwidth - a.bandwidth)[0]!;
         const label = chosen.resolution || formatBandwidth(chosen.bandwidth);
-        showToast(`下载质量: ${label}`);
+        showToast(`保存质量: ${label}`);
         const variantText = await this.fetchText(chosen.url, signal);
         const parsed = this.parseM3u8(variantText, chosen.url);
         segments = parsed.segments;
@@ -97,7 +97,7 @@ export class HlsContentDownloader {
         throw new Error('m3u8 中未找到任何视频分段');
       }
 
-      showToast(`开始下载 ${segments.length} 个分段...`);
+      showToast(`开始保存 ${segments.length} 个分段...`);
 
       // 3. 如果有 init segment（fMP4 格式），先下载
       let initSegment: ArrayBuffer | null = null;
@@ -119,7 +119,7 @@ export class HlsContentDownloader {
         const speed = totalBytes / elapsed;
         const detail = `${completed}/${segments.length} · ${formatBytes(totalBytes)} · ${formatBytes(speed)}/s`;
         this.notify({ status: 'downloading', percent, detail });
-        showToast(`下载中: ${percent}% (${detail})`);
+        showToast(`保存中: ${percent}% (${detail})`);
       });
 
       // 5. init segment 放在最前面
@@ -142,14 +142,14 @@ export class HlsContentDownloader {
 
       setTimeout(() => URL.revokeObjectURL(blobUrl), 60000);
       const totalSize = formatBytes(totalBytes);
-      showToast(`下载完成 (${totalSize})`);
+      showToast(`保存完成 (${totalSize})`);
       this.notify({ status: 'done' });
     } catch (error) {
       if (signal.aborted) {
-        showToast('下载已取消');
-        this.notify({ status: 'error', message: '下载已取消' });
+        showToast('保存已取消');
+        this.notify({ status: 'error', message: '保存已取消' });
       } else {
-        const message = error instanceof Error ? error.message : 'HLS 下载失败';
+        const message = error instanceof Error ? error.message : 'HLS 保存失败';
         showToast(message);
         this.notify({ status: 'error', message });
       }
@@ -292,11 +292,11 @@ export class HlsContentDownloader {
       } catch (err) {
         if (signal.aborted) throw err;
         if (attempt < MAX_RETRIES) {
-          showToast(`分段下载失败，第 ${attempt + 1} 次重试...`);
+          showToast(`分段保存失败，第 ${attempt + 1} 次重试...`);
           await new Promise((r) => setTimeout(r, RETRY_DELAY * (attempt + 1)));
           continue;
         }
-        throw new Error(`分段下载失败（已重试 ${MAX_RETRIES} 次）: ${url.split('/').pop()}`);
+        throw new Error(`分段保存失败（已重试 ${MAX_RETRIES} 次）: ${url.split('/').pop()}`);
       } finally {
         signal.removeEventListener('abort', onAbort);
       }
@@ -314,7 +314,7 @@ export class HlsContentDownloader {
 
     const worker = async (): Promise<void> => {
       while (nextIndex < segments.length) {
-        if (signal.aborted) throw new Error('下载已取消');
+        if (signal.aborted) throw new Error('保存已取消');
 
         const idx = nextIndex++;
         const segment = segments[idx]!;

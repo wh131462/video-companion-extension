@@ -1362,7 +1362,7 @@ export class HlsPlayerUI {
         case 'done':
           btn.disabled = false;
           if (isActionBtn) {
-            btn.textContent = '下载';
+            btn.textContent = '保存';
           } else {
             btn.innerHTML = originalContent;
           }

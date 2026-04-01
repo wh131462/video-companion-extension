@@ -3,7 +3,7 @@
     "message": "Video Companion"
   },
   "extDescription": {
-    "message": "网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏、通过链接播放视频（m3u8支持），支持 YouTube/B站/腾讯视频等主流平台"
+    "message": "网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、网页全屏、通过链接播放视频，支持各大主流视频平台"
   },
   "cmdTogglePip": {
     "message": "切换画中画模式"
@@ -33,7 +33,7 @@
     "message": "截图"
   },
   "btnDownload": {
-    "message": "下载"
+    "message": "保存"
   },
   "btnLinkPlay": {
     "message": "通过链接播放"
@@ -66,7 +66,7 @@
     "message": "取消"
   },
   "btnStartDownload": {
-    "message": "开始下载"
+    "message": "开始保存"
   },
   "btnRetry": {
     "message": "重试"
@@ -98,10 +98,10 @@
     "message": "截图失败"
   },
   "toastDownloadStarted": {
-    "message": "开始下载视频"
+    "message": "开始保存视频"
   },
   "toastDownloadFailed": {
-    "message": "下载失败"
+    "message": "保存失败"
   },
   "toastLoopOn": {
     "message": "循环播放已开启"
@@ -149,7 +149,7 @@
     "message": "复制失败"
   },
   "toastDownloading": {
-    "message": "已有下载任务进行中"
+    "message": "已有保存任务进行中"
   },
   "popupControlPanel": {
     "message": "控制面板"
@@ -224,7 +224,7 @@
     }
   },
   "hlsSelectQuality": {
-    "message": "选择下载质量"
+    "message": "选择保存质量"
   },
   "hlsVariant": {
     "message": "变体 $NUM$",
@@ -258,6 +258,6 @@
     "message": "循环播放"
   },
   "menuDownloadVideo": {
-    "message": "下载视频"
+    "message": "保存视频"
   }
 }

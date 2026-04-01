@@ -3,7 +3,7 @@
     "message": "Video Companion"
   },
   "extDescription": {
-    "message": "Web video enhancer - PiP, speed control (0.25x-16x), screenshot, download, web fullscreen, play video by link (m3u8 supported). Supports YouTube, Bilibili, Tencent Video and more."
+    "message": "Web video enhancer - PiP, speed control (0.25x-16x), screenshot, web fullscreen, play video by link. Works on all major video platforms."
   },
 
   "cmdTogglePip": {
@@ -35,7 +35,7 @@
     "message": "Screenshot"
   },
   "btnDownload": {
-    "message": "Download"
+    "message": "Save"
   },
   "btnLinkPlay": {
     "message": "Play by Link"
@@ -68,7 +68,7 @@
     "message": "Cancel"
   },
   "btnStartDownload": {
-    "message": "Start Download"
+    "message": "Start Save"
   },
   "btnRetry": {
     "message": "Retry"
@@ -101,10 +101,10 @@
     "message": "Screenshot Failed"
   },
   "toastDownloadStarted": {
-    "message": "Download Started"
+    "message": "Save Started"
   },
   "toastDownloadFailed": {
-    "message": "Download Failed"
+    "message": "Save Failed"
   },
   "toastLoopOn": {
     "message": "Loop Enabled"
@@ -152,7 +152,7 @@
     "message": "Copy Failed"
   },
   "toastDownloading": {
-    "message": "Download Already in Progress"
+    "message": "Save Already in Progress"
   },
 
   "popupControlPanel": {
@@ -230,7 +230,7 @@
     }
   },
   "hlsSelectQuality": {
-    "message": "Select Download Quality"
+    "message": "Select Save Quality"
   },
   "hlsVariant": {
     "message": "Variant $NUM$",
@@ -265,6 +265,6 @@
     "message": "Loop"
   },
   "menuDownloadVideo": {
-    "message": "Download Video"
+    "message": "Save Video"
   }
 }

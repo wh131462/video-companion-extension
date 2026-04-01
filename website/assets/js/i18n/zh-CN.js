@@ -9,7 +9,7 @@ window.I18N_ZHCN = {
 
   // Hero
   'hero.subtitle': '增强网页视频播放体验的 Chrome 扩展',
-  'hero.features': '画中画 · 全屏 · 倍速控制 · 截图下载 · HLS 流媒体',
+  'hero.features': '画中画 · 全屏 · 倍速控制 · 截图 · HLS 流媒体',
   'hero.installBtn': '安装扩展',
   'hero.sourceBtn': '查看源码',
   'hero.screenshotAlt': 'Video Companion 控制面板',
@@ -25,7 +25,7 @@ window.I18N_ZHCN = {
   'feature.speedDesc': '0.25x - 16x',
   'feature.screenshot': '视频截图',
   'feature.screenshotDesc': '一键截取画面',
-  'feature.download': '视频下载',
+  'feature.download': '视频保存',
   'feature.downloadDesc': '支持 HLS 流媒体',
   'feature.loop': '循环播放',
   'feature.loopDesc': '开启/关闭循环',
@@ -86,7 +86,7 @@ window.I18N_ZHCN = {
 
   // Meta
   'meta.title': 'Video Companion - 增强网页视频播放体验的 Chrome 扩展',
-  'meta.description': 'Video Companion 是一款 Chrome 扩展，提供画中画、全屏、倍速控制、视频截图等功能，支持 YouTube、Bilibili 等主流视频平台。',
+  'meta.description': 'Video Companion 是一款 Chrome 扩展，提供画中画、全屏、倍速控制、视频截图等功能，支持各大主流视频平台。',
   'meta.ogTitle': 'Video Companion - Chrome 视频增强扩展',
-  'meta.ogDescription': '画中画、全屏、倍速控制、截图下载 - 增强网页视频播放体验',
+  'meta.ogDescription': '画中画、全屏、倍速控制、截图 - 增强网页视频播放体验',
 };

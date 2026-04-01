@@ -2,7 +2,7 @@
 
 **中文** | [English](README.md)
 
-> 网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、下载、网页全屏，支持 YouTube/B站/腾讯视频等主流平台
+> 网页视频增强工具 - 画中画、倍速 (0.25x-16x)、截图、网页全屏，支持各大主流视频平台
 
 [![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/nmkklhdipnadeimbnimllidjgccbifhm?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
 [![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/nmkklhdipnadeimbnimllidjgccbifhm?label=用户数&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
@@ -14,7 +14,7 @@
 
 - **随心播放** — 讲座视频加速到 16 倍，教程慢放到 0.25 倍，精细调速找到你的最佳节奏。
 - **画中画多任务** — 将视频悬浮在浏览器之上，边看视频边工作、浏览网页或记笔记。
-- **一键保存** — 即时截取任意画面，或下载视频（包括 HLS/m3u8 流媒体）供离线观看。
+- **一键保存** — 即时截取任意画面，或保存视频（包括 HLS/m3u8 流媒体）供离线观看。
 - **链接直播** — 粘贴 m3u8、mp4 或 webm 链接直接播放，无需额外软件。
 - **沉浸观看** — 网页全屏模式填满浏览器窗口而不进入系统全屏，还可隐藏原生控制栏获得更干净的画面。
 - **轻量无广告，尊重隐私** — 无需注册账号，不收集任何数据，没有广告。完全在浏览器本地运行。
@@ -49,13 +49,13 @@
 | 功能 | 说明 |
 |------|------|
 | 视频截图 | 一键截取当前画面并下载为 PNG |
-| 视频下载 | 下载当前视频，支持 HLS (m3u8) 流媒体下载 |
+| 视频保存 | 保存当前视频，支持 HLS (m3u8) 流媒体保存 |
 | 通过链接播放 | 输入任意视频 URL 播放，支持 m3u8、mp4、webm 等格式 |
 | 流媒体源检测 | 自动拦截页面中的 m3u8 流媒体地址 |
 | 隐藏原生控制器 | 隐藏浏览器默认视频控制栏，使用扩展控制面板替代 |
 
 ### 🌐 智能适配
-- **自动检测** - 智能识别 YouTube、Bilibili、腾讯视频、爱奇艺、优酷、西瓜视频等主流平台
+- **自动检测** - 智能识别各大主流视频平台的自定义播放器
 - **右键菜单增强** - 所有视频均支持右键菜单快速操作
 - **控制面板** - 原生 video 元素显示悬浮控制面板，自定义播放器仅提供右键菜单
 
@@ -77,7 +77,7 @@
 - 全屏 / 退出全屏
 - 网页全屏
 - 截图
-- 下载视频
+- 保存视频
 - 通过链接播放
 
 ### 控制面板

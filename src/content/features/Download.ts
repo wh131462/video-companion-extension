@@ -16,7 +16,7 @@ export class DownloadFeature implements VideoFeature {
     const src = video.src || video.currentSrc;
 
     if (!isValidVideoSource(src)) {
-      throw new Error('无法获取视频源地址或该视频类型不支持直接下载');
+      throw new Error('无法获取视频源地址或该视频类型不支持直接保存');
     }
 
     const link = document.createElement('a');

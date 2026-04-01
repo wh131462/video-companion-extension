@@ -2,7 +2,7 @@
 
 **English** | [中文](README.zh.md)
 
-> Web video enhancer - PiP, speed control (0.25x-16x), screenshot, download, web fullscreen. Supports YouTube, Bilibili, Tencent Video and more.
+> Web video enhancer - PiP, speed control (0.25x-16x), screenshot, web fullscreen. Works on all major video platforms.
 
 [![Chrome Web Store Version](https://img.shields.io/chrome-web-store/v/nmkklhdipnadeimbnimllidjgccbifhm?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
 [![Chrome Web Store Users](https://img.shields.io/chrome-web-store/users/nmkklhdipnadeimbnimllidjgccbifhm?label=Users&logo=googlechrome&logoColor=white)](https://chromewebstore.google.com/detail/video-companion/nmkklhdipnadeimbnimllidjgccbifhm)
@@ -14,7 +14,7 @@ Most video platforms lock you into their built-in player with limited controls. 
 
 - **Watch Your Way** — Speed up lectures to 16x, slow down tutorials to 0.25x, or find your perfect pace with fine-grained speed control.
 - **Multitask with Picture-in-Picture** — Pop any video out of the browser tab and keep watching while you work, browse, or take notes.
-- **Save What Matters** — Screenshot any frame instantly or download videos (including HLS/m3u8 streams) for offline viewing.
+- **Save What Matters** — Screenshot any frame instantly or save videos (including HLS/m3u8 streams) for offline viewing.
 - **Play Any Video Link** — Paste an m3u8, mp4, or webm URL and play it directly in the browser. No extra software needed.
 - **Distraction-Free Viewing** — Web fullscreen fills your browser without entering system fullscreen, and you can hide native controls for a cleaner experience.
 - **Lightweight & Privacy-Friendly** — No account required. No data collection. No ads. Runs entirely in your browser.
@@ -49,13 +49,13 @@ Most video platforms lock you into their built-in player with limited controls. 
 | Feature | Description |
 |------|------|
 | Screenshot | Capture current frame as PNG |
-| Download | Download video, supports HLS (m3u8) streaming |
+| Save | Save video, supports HLS (m3u8) streaming |
 | Play by Link | Play any video URL (m3u8, mp4, webm, etc.) |
 | Stream Detection | Auto-detect m3u8 streaming sources |
 | Hide Controls | Hide native video controls |
 
 ### 🌐 Smart Adaptation
-- **Auto Detection** - Recognizes YouTube, Bilibili, Tencent Video, iQIYI, Youku, Xigua Video, etc.
+- **Auto Detection** - Recognizes major video platforms and custom players
 - **Context Menu** - Enhanced right-click menu for all videos
 - **Control Panel** - Floating panel for native video elements
 
@@ -77,7 +77,7 @@ Right-click on any video to access:
 - Fullscreen / Exit Fullscreen
 - Web Fullscreen
 - Screenshot
-- Download Video
+- Save Video
 - Play by Link
 
 ### Control Panel

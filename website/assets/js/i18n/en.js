@@ -25,7 +25,7 @@ window.I18N_EN = {
   'feature.speedDesc': '0.25x - 16x',
   'feature.screenshot': 'Screenshot',
   'feature.screenshotDesc': 'Capture video frame',
-  'feature.download': 'Download',
+  'feature.download': 'Save',
   'feature.downloadDesc': 'Supports HLS streaming',
   'feature.loop': 'Loop',
   'feature.loopDesc': 'Toggle loop playback',
@@ -86,7 +86,7 @@ window.I18N_EN = {
 
   // Meta
   'meta.title': 'Video Companion - Chrome Extension for Enhanced Video Playback',
-  'meta.description': 'Video Companion is a Chrome extension that provides PiP, fullscreen, speed control, screenshot and more, supporting YouTube, Bilibili and other major video platforms.',
+  'meta.description': 'Video Companion is a Chrome extension that provides PiP, fullscreen, speed control, screenshot and more, supporting all major video platforms.',
   'meta.ogTitle': 'Video Companion - Chrome Video Enhancement Extension',
   'meta.ogDescription': 'PiP, Fullscreen, Speed Control, Screenshot - Enhance web video playback',
 };
